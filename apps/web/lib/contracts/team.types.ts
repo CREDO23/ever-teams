@@ -7,41 +7,41 @@ import { basePerTenantEntityModelSchema } from './common.types';
 
 export const teamSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Team name is required'),
-	prefix: z.string().max(10).nullable().optional(),
-	logo: z.string().nullable().optional(),
-	profile_link: z.string().nullable().optional(),
-	memberCount: z.number().min(0).nullable().optional(),
-	public: z.boolean().nullable().optional(),
-	color: z.string().nullable().optional(),
-	emoji: z.string().nullable().optional(),
-	taskPrivacy: z.boolean().nullable().optional(),
-	description: z.string().nullable().optional(),
+	prefix: z.string().max(10).nullish(),
+	logo: z.string().nullish(),
+	profile_link: z.string().nullish(),
+	memberCount: z.number().min(0).nullish(),
+	public: z.boolean().nullish(),
+	color: z.string().nullish(),
+	emoji: z.string().nullish(),
+	taskPrivacy: z.boolean().nullish(),
+	description: z.string().nullish(),
 	
 	organizationId: z.string(),
-	creatorId: z.string().nullable().optional(),
-	imageId: z.string().nullable().optional()
+	creatorId: z.string().nullish(),
+	imageId: z.string().nullish()
 });
 
 export const teamMemberSchema = basePerTenantEntityModelSchema.extend({
 	teamId: z.string(),
 	employeeId: z.string(),
-	roleId: z.string().nullable().optional(),
+	roleId: z.string().nullish(),
 	
-	isManager: z.boolean().nullable().optional(),
+	isManager: z.boolean().nullish(),
 	assignedAt: z.union([z.date(), z.string()]).optional()
 });
 
 export const teamWithRelationsSchema = teamSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullable().optional(),
-	creator: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
+	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
+	creator: z.lazy(() => require('./user.types').userSchema).nullish(),
 	members: z.array(z.lazy(() => require('./employee.types').employeeSchema)).optional(),
 	tags: z.array(z.lazy(() => require('./tag.types').tagSchema)).optional()
 });
 
 export const teamMemberWithRelationsSchema = teamMemberSchema.extend({
-	team: z.lazy(() => require('./team.types').teamSchema).nullable().optional(),
-	employee: z.lazy(() => require('./employee.types').employeeSchema).nullable().optional(),
-	role: z.lazy(() => require('./role.types').roleSchema).nullable().optional()
+	team: z.lazy(() => require('./team.types').teamSchema).nullish(),
+	employee: z.lazy(() => require('./employee.types').employeeSchema).nullish(),
+	role: z.lazy(() => require('./role.types').roleSchema).nullish()
 });
 
 export const getTeamRequestSchema = z.object({
@@ -97,7 +97,7 @@ export const removeTeamMemberRequestSchema = z.object({
 export const updateTeamMemberRoleRequestSchema = z.object({
 	teamId: z.string().uuid(),
 	employeeId: z.string().uuid(),
-	roleId: z.string().uuid().nullable().optional(),
+	roleId: z.string().uuid().nullish(),
 	isManager: z.boolean().optional()
 });
 

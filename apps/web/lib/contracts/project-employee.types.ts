@@ -4,7 +4,7 @@ import { basePerTenantEntityModelSchema } from './common.types';
 export const projectEmployeeSchema = basePerTenantEntityModelSchema.extend({
   projectId: z.string(),
   employeeId: z.string(),
-  role: z.string().nullable().optional(),
+  role: z.string().nullish(),
   isManager: z.boolean().default(false),
   assignedAt: z.string().datetime().optional(),
 });

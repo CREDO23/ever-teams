@@ -3,10 +3,10 @@ import { baseEntitySchema } from './common.types';
 
 // ============ Database Schema ============
 export const tenantSchema = baseEntitySchema.extend({
-  name: z.string().nullable().optional(),
-  logo: z.string().nullable().optional(),
+  name: z.string().nullish(),
+  logo: z.string().nullish(),
   standardWorkHoursPerDay: z.number().default(8).optional(),
-  imageId: z.string().nullable().optional(),
+  imageId: z.string().nullish(),
 });
 
 // ============ With Relations ============

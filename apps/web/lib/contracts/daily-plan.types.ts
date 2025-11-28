@@ -13,13 +13,13 @@ export const dailyPlanSchema = basePerTenantAndOrganizationEntityModelSchema.ext
   workTimePlanned: z.number().min(0),
   status: z.nativeEnum(DailyPlanStatusEnum),
   employeeId: z.string(),
-  organizationTeamId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
 });
 
 export const dailyPlanWithRelationsSchema = dailyPlanSchema.extend({
   tasks: z.lazy(() => z.array(require('./task.types').taskSchema)).optional(),
   employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
-  organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullable().optional(),
+  organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
 });
 
 export const createDailyPlanRequestSchema = z.object({
@@ -37,7 +37,7 @@ export const updateDailyPlanRequestSchema = z.object({
   date: z.string().datetime().optional(),
   workTimePlanned: z.number().min(0).optional(),
   status: z.nativeEnum(DailyPlanStatusEnum).optional(),
-  organizationTeamId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
 });
 
 export const dailyPlanTasksUpdateRequestSchema = z.object({

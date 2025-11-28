@@ -15,13 +15,13 @@ export const fileStorageProviderEnum = z.enum([
 export const imageAssetSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   name: z.string(),
   url: z.string().url(),
-  thumb: z.string().nullable().optional(),
-  width: z.number().positive().nullable().optional(),
-  height: z.number().positive().nullable().optional(),
-  size: z.number().positive().nullable().optional(),
+  thumb: z.string().nullish(),
+  width: z.number().positive().nullish(),
+  height: z.number().positive().nullish(),
+  size: z.number().positive().nullish(),
   isFeatured: z.boolean().default(false).optional(),
-  externalProviderId: z.string().nullable().optional(),
-  storageProvider: fileStorageProviderEnum.nullable().optional(),
+  externalProviderId: z.string().nullish(),
+  storageProvider: fileStorageProviderEnum.nullish(),
 });
 
 // ============ With Relations ============

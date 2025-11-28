@@ -3,19 +3,19 @@ import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
 import { TimeLogSourceEnum, TimeLogTypeEnum } from './timer.types';
 
 export const timeLogSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
-  timesheetId: z.string().nullable().optional(),
-  taskId: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
-  organizationContactId: z.string().nullable().optional(),
+  timesheetId: z.string().nullish(),
+  taskId: z.string().nullish(),
+  projectId: z.string().nullish(),
+  organizationContactId: z.string().nullish(),
   employeeId: z.string(),
-  organizationTeamId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
   source: z.nativeEnum(TimeLogSourceEnum).optional(),
   startedAt: z.string().datetime(),
-  stoppedAt: z.string().datetime().nullable().optional(),
-  editedAt: z.string().datetime().nullable().optional(),
+  stoppedAt: z.string().datetime().nullish(),
+  editedAt: z.string().datetime().nullish(),
   logType: z.nativeEnum(TimeLogTypeEnum),
-  description: z.string().nullable().optional(),
-  reason: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  reason: z.string().nullish(),
   duration: z.number(),
   isBillable: z.boolean().default(false),
   isRunning: z.boolean().default(false),
@@ -24,11 +24,11 @@ export const timeLogSchema = basePerTenantAndOrganizationEntityModelSchema.exten
 });
 
 export const timeLogWithRelationsSchema = timeLogSchema.extend({
-  timesheet: z.lazy(() => require('./timesheet.types').timesheetSchema).nullable().optional(),
-  task: z.lazy(() => require('./task.types').taskSchema).nullable().optional(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullable().optional(),
+  timesheet: z.lazy(() => require('./timesheet.types').timesheetSchema).nullish(),
+  task: z.lazy(() => require('./task.types').taskSchema).nullish(),
+  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
   employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
-  organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullable().optional(),
+  organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
   timeSlots: z.lazy(() => z.array(require('./time-slot.types').timeSlotSchema)).optional(),
   tags: z.lazy(() => z.array(require('./tag.types').tagSchema)).optional(),
 });

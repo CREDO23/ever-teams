@@ -11,14 +11,14 @@ export const requestToJoinStatusEnum = z.enum([
 export const requestToJoinSchema = basePerTenantEntityModelSchema.extend({
   email: z.string().email(),
   fullName: z.string(),
-  position: z.string().nullable().optional(),
-  linkAddress: z.string().url().nullable().optional(),
+  position: z.string().nullish(),
+  linkAddress: z.string().url().nullish(),
   status: requestToJoinStatusEnum,
-  code: z.string().nullable().optional(),
+  code: z.string().nullish(),
   organizationTeamId: z.string().uuid(),
-  organizationId: z.string().uuid().nullable().optional(),
-  userId: z.string().uuid().nullable().optional(),
-  expiredAt: z.date().nullable().optional()
+  organizationId: z.string().uuid().nullish(),
+  userId: z.string().uuid().nullish(),
+  expiredAt: z.date().nullish()
 });
 
 export const requestToJoinWithRelationsSchema = requestToJoinSchema.extend({

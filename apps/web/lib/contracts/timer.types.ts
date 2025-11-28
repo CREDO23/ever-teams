@@ -23,8 +23,8 @@ export enum TimeLogTypeEnum {
 export const timerStatusSchema = z.object({
   duration: z.number().optional(),
   running: z.boolean().optional(),
-  lastLog: z.lazy(() => require('./time-log.types').timeLogSchema).nullable().optional(),
-  lastWorkedTask: z.lazy(() => require('./task.types').taskSchema).nullable().optional(),
+  lastLog: z.lazy(() => require('./time-log.types').timeLogSchema).nullish(),
+  lastWorkedTask: z.lazy(() => require('./task.types').taskSchema).nullish(),
   timerStatus: z.nativeEnum(TimerStatusEnum).optional(),
 });
 

@@ -12,17 +12,17 @@ export enum TimesheetStatusEnum {
 
 export const timesheetSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   employeeId: z.string(),
-  approvedById: z.string().nullable().optional(),
+  approvedById: z.string().nullish(),
   duration: z.number().optional(),
   keyboard: z.number().optional(),
   mouse: z.number().optional(),
   overall: z.number().optional(),
-  startedAt: z.string().datetime().nullable().optional(),
-  stoppedAt: z.string().datetime().nullable().optional(),
-  approvedAt: z.string().datetime().nullable().optional(),
-  submittedAt: z.string().datetime().nullable().optional(),
-  lockedAt: z.string().datetime().nullable().optional(),
-  editedAt: z.string().datetime().nullable().optional(),
+  startedAt: z.string().datetime().nullish(),
+  stoppedAt: z.string().datetime().nullish(),
+  approvedAt: z.string().datetime().nullish(),
+  submittedAt: z.string().datetime().nullish(),
+  lockedAt: z.string().datetime().nullish(),
+  editedAt: z.string().datetime().nullish(),
   isBilled: z.boolean().default(false),
   status: z.nativeEnum(TimesheetStatusEnum),
   isEdited: z.boolean().default(false),
@@ -31,7 +31,7 @@ export const timesheetSchema = basePerTenantAndOrganizationEntityModelSchema.ext
 
 export const timesheetWithRelationsSchema = timesheetSchema.extend({
   employee: z.lazy(() => require('./employee.types').employeeSchema),
-  approvedBy: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
+  approvedBy: z.lazy(() => require('./user.types').userSchema).nullish(),
   timeLogs: z.lazy(() => z.array(require('./time-log.types').timeLogSchema)).optional(),
 });
 

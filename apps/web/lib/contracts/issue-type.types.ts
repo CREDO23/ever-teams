@@ -14,15 +14,15 @@ export const issueTypeEnum = z.enum([
 export const issueTypeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
-  description: z.string().nullable().optional(),
-  icon: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  icon: z.string().nullish(),
+  color: z.string().nullish(),
   isDefault: z.boolean().default(false).optional(),
   isSystem: z.boolean().default(false).optional(),
   // Foreign keys
-  organizationTeamId: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
-  imageId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
+  projectId: z.string().nullish(),
+  imageId: z.string().nullish(),
 });
 
 // ============ With Relations ============
@@ -65,9 +65,9 @@ export const createIssueTypeRequestSchema = z.object({
   color: z.string().optional(),
   isDefault: z.boolean().optional(),
   projectId: z.string().optional(),
-  organizationId: z.string().nullable().optional(),
-  tenantId: z.string().nullable().optional(),
-  organizationTeamId: z.string().nullable().optional(),
+  organizationId: z.string().nullish(),
+  tenantId: z.string().nullish(),
+  organizationTeamId: z.string().nullish(),
 });
 
 export const updateIssueTypeRequestSchema = createIssueTypeRequestSchema.partial();

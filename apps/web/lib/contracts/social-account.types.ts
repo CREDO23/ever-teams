@@ -8,19 +8,19 @@ import { basePerTenantEntityModelSchema, providerEnumSchema } from './common.typ
 export const socialAccountSchema = basePerTenantEntityModelSchema.extend({
 	provider: providerEnumSchema,
 	providerAccountId: z.string().min(1, 'Provider account ID is required'),
-	accessToken: z.string().nullable().optional(),
-	refreshToken: z.string().nullable().optional(),
-	expiresAt: z.union([z.date(), z.string()]).nullable().optional(),
-	scope: z.string().nullable().optional(),
-	tokenType: z.string().nullable().optional(),
-	idToken: z.string().nullable().optional(),
-	sessionState: z.string().nullable().optional(),
+	accessToken: z.string().nullish(),
+	refreshToken: z.string().nullish(),
+	expiresAt: z.union([z.date(), z.string()]).nullish(),
+	scope: z.string().nullish(),
+	tokenType: z.string().nullish(),
+	idToken: z.string().nullish(),
+	sessionState: z.string().nullish(),
 	
 	userId: z.string()
 });
 
 export const socialAccountWithRelationsSchema = socialAccountSchema.extend({
-	user: z.lazy(() => require('./user.types').userSchema).nullable().optional()
+	user: z.lazy(() => require('./user.types').userSchema).nullish()
 });
 
 export const getSocialAccountRequestSchema = z.object({

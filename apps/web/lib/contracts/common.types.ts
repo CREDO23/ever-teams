@@ -60,7 +60,7 @@ export const relationalImageAssetSchema = z.object({
 });
 
 export const softDeleteSchema = z.object({
-	deletedAt: z.union([z.date(), z.string()]).nullable().optional()
+	deletedAt: z.union([z.date(), z.string()]).nullish()
 });
 
 export const timestampedSchema = z.object({

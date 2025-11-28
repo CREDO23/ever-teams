@@ -13,17 +13,17 @@ export const inviteSchema = basePerTenantEntityModelSchema.extend({
 	token: z.string().min(1, 'Token is required'),
 	email: z.string().email('Invalid email address'),
 	status: inviteStatusEnumSchema.default('PENDING'),
-	expireDate: z.union([z.date(), z.string()]).nullable().optional(),
-	actionDate: z.union([z.date(), z.string()]).nullable().optional(),
-	fullName: z.string().nullable().optional(),
-	code: z.number().nullable().optional(),
-	inviteType: inviteTypeEnumSchema.nullable().optional(),
+	expireDate: z.union([z.date(), z.string()]).nullish(),
+	actionDate: z.union([z.date(), z.string()]).nullish(),
+	fullName: z.string().nullish(),
+	code: z.number().nullish(),
+	inviteType: inviteTypeEnumSchema.nullish(),
 	
 	organizationId: z.string(),
-	invitedById: z.string().nullable().optional(),
-	roleId: z.string().nullable().optional(),
-	userId: z.string().nullable().optional(), // User created from this invite
-	employeeId: z.string().nullable().optional() // Employee created from this invite
+	invitedById: z.string().nullish(),
+	roleId: z.string().nullish(),
+	userId: z.string().nullish(), // User created from this invite
+	employeeId: z.string().nullish() // Employee created from this invite
 });
 
 export const inviteTeamSchema = basePerTenantEntityModelSchema.extend({
@@ -37,11 +37,11 @@ export const inviteProjectSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const inviteWithRelationsSchema = inviteSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullable().optional(),
-	invitedBy: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
-	role: z.lazy(() => require('./role.types').roleSchema).nullable().optional(),
-	user: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
-	employee: z.lazy(() => require('./employee.types').employeeSchema).nullable().optional(),
+	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
+	invitedBy: z.lazy(() => require('./user.types').userSchema).nullish(),
+	role: z.lazy(() => require('./role.types').roleSchema).nullish(),
+	user: z.lazy(() => require('./user.types').userSchema).nullish(),
+	employee: z.lazy(() => require('./employee.types').employeeSchema).nullish(),
 	teams: z.array(z.lazy(() => require('./team.types').teamSchema)).optional(),
 	projects: z.array(z.object({
 		id: z.string(),

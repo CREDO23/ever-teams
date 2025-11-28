@@ -7,13 +7,13 @@ import { basePerTenantEntityModelSchema } from './common.types';
 
 export const tagSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Tag name is required'),
-	description: z.string().nullable().optional(),
-	color: z.string().nullable().optional(),
-	isSystem: z.boolean().nullable().optional(),
-	icon: z.string().nullable().optional(),
+	description: z.string().nullish(),
+	color: z.string().nullish(),
+	isSystem: z.boolean().nullish(),
+	icon: z.string().nullish(),
 	
-	organizationId: z.string().nullable().optional(),
-	organizationTeamId: z.string().nullable().optional()
+	organizationId: z.string().nullish(),
+	organizationTeamId: z.string().nullish()
 });
 
 export const entityTagSchema = basePerTenantEntityModelSchema.extend({
@@ -23,8 +23,8 @@ export const entityTagSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const tagWithRelationsSchema = tagSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullable().optional(),
-	organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullable().optional(),
+	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
+	organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
 	entities: z.array(z.object({
 		id: z.string(),
 		type: z.string(),

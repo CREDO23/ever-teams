@@ -14,41 +14,41 @@ import {
 export const userSchema = basePerTenantEntityModelSchema
 	.merge(relationalImageAssetSchema)
 	.extend({
-		thirdPartyId: z.string().nullable().optional(),
-		name: z.string().nullable().optional(),
-		firstName: z.string().nullable().optional(),
-		lastName: z.string().nullable().optional(),
-		email: z.string().email().nullable().optional(),
-		phoneNumber: z.string().nullable().optional(),
-		username: z.string().nullable().optional(),
-		timeZone: z.string().nullable().optional(),
-		timeFormat: timeFormatEnumSchema.nullable().optional(),
+		thirdPartyId: z.string().nullish(),
+		name: z.string().nullish(),
+		firstName: z.string().nullish(),
+		lastName: z.string().nullish(),
+		email: z.string().email().nullish(),
+		phoneNumber: z.string().nullish(),
+		username: z.string().nullish(),
+		timeZone: z.string().nullish(),
+		timeFormat: timeFormatEnumSchema.nullish(),
 		
-		hash: z.string().nullable().optional(),
-		refreshToken: z.string().nullable().optional(),
+		hash: z.string().nullish(),
+		refreshToken: z.string().nullish(),
 		
-		roleId: z.string().nullable().optional(),
-		employeeId: z.string().nullable().optional(),
-		defaultTeamId: z.string().nullable().optional(),
-		lastTeamId: z.string().nullable().optional(),
-		defaultOrganizationId: z.string().nullable().optional(),
-		lastOrganizationId: z.string().nullable().optional(),
+		roleId: z.string().nullish(),
+		employeeId: z.string().nullish(),
+		defaultTeamId: z.string().nullish(),
+		lastTeamId: z.string().nullish(),
+		defaultOrganizationId: z.string().nullish(),
+		lastOrganizationId: z.string().nullish(),
 		
-		preferredLanguage: z.string().nullable().optional(),
-		preferredComponentLayout: componentLayoutStyleEnumSchema.nullable().optional(),
+		preferredLanguage: z.string().nullish(),
+		preferredComponentLayout: componentLayoutStyleEnumSchema.nullish(),
 		
-		fullName: z.string().nullable().optional(),
+		fullName: z.string().nullish(),
 		
 		isImporting: z.boolean().default(false).optional(),
-		sourceId: z.string().nullable().optional(),
+		sourceId: z.string().nullish(),
 		
-		code: z.string().nullable().optional(),
-		codeExpireAt: z.union([z.date(), z.string()]).nullable().optional(),
-		emailVerifiedAt: z.union([z.date(), z.string()]).nullable().optional(),
-		emailToken: z.string().nullable().optional(),
+		code: z.string().nullish(),
+		codeExpireAt: z.union([z.date(), z.string()]).nullish(),
+		emailVerifiedAt: z.union([z.date(), z.string()]).nullish(),
+		emailToken: z.string().nullish(),
 		isEmailVerified: z.boolean().default(false).optional(),
 		
-		lastLoginAt: z.union([z.date(), z.string()]).nullable().optional()
+		lastLoginAt: z.union([z.date(), z.string()]).nullish()
 	});
 
 export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
@@ -61,27 +61,27 @@ export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 export const userWithRelationsSchema = userSchema.extend({
 	role: z.lazy(() => {
 		const { roleSchema } = require('./role.types');
-		return roleSchema.nullable().optional();
+		return roleSchema.nullish();
 	}),
 	employee: z.lazy(() => {
 		const { employeeSchema } = require('./employee.types');
-		return employeeSchema.nullable().optional();
+		return employeeSchema.nullish();
 	}),
 	defaultTeam: z.lazy(() => {
 		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.nullable().optional();
+		return organizationTeamSchema.nullish();
 	}),
 	lastTeam: z.lazy(() => {
 		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.nullable().optional();
+		return organizationTeamSchema.nullish();
 	}),
 	defaultOrganization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullable().optional();
+		return organizationSchema.nullish();
 	}),
 	lastOrganization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullable().optional();
+		return organizationSchema.nullish();
 	}),
 	tags: z.lazy(() => {
 		const { tagSchema } = require('./tag.types');
@@ -101,10 +101,10 @@ export const userWithRelationsSchema = userSchema.extend({
 });
 
 export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
-	user: z.lazy(() => userSchema).nullable().optional(),
+	user: z.lazy(() => userSchema).nullish(),
 	organization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullable().optional();
+		return organizationSchema.nullish();
 	})
 });
 

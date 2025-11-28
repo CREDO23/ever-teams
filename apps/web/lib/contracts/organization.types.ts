@@ -7,28 +7,28 @@ import { basePerTenantEntityModelSchema } from './common.types';
 
 export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Organization name is required'),
-	isDefault: z.boolean().nullable().optional(),
-	profile_link: z.string().nullable().optional(),
-	banner: z.string().nullable().optional(),
-	totalEmployees: z.number().min(0).nullable().optional(),
-	short_description: z.string().max(200).nullable().optional(),
-	client_focus: z.string().nullable().optional(),
-	overview: z.string().nullable().optional(),
-	imageUrl: z.string().nullable().optional(),
-	currency: z.string().length(3).nullable().optional(), // ISO 4217 currency code
-	timeZone: z.string().nullable().optional(),
-	defaultValueDateType: z.string().nullable().optional(),
-	regionCode: z.string().nullable().optional(),
-	website: z.string().nullable().optional(),
-	contact: z.string().nullable().optional(),
+	isDefault: z.boolean().nullish(),
+	profile_link: z.string().nullish(),
+	banner: z.string().nullish(),
+	totalEmployees: z.number().min(0).nullish(),
+	short_description: z.string().max(200).nullish(),
+	client_focus: z.string().nullish(),
+	overview: z.string().nullish(),
+	imageUrl: z.string().nullish(),
+	currency: z.string().length(3).nullish(), // ISO 4217 currency code
+	timeZone: z.string().nullish(),
+	defaultValueDateType: z.string().nullish(),
+	regionCode: z.string().nullish(),
+	website: z.string().nullish(),
+	contact: z.string().nullish(),
 	
-	ownerId: z.string().nullable().optional(),
-	contactId: z.string().nullable().optional(),
-	imageId: z.string().nullable().optional()
+	ownerId: z.string().nullish(),
+	contactId: z.string().nullish(),
+	imageId: z.string().nullish()
 });
 
 export const organizationWithRelationsSchema = organizationSchema.extend({
-	owner: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
+	owner: z.lazy(() => require('./user.types').userSchema).nullish(),
 	employees: z.array(z.lazy(() => require('./employee.types').employeeSchema)).optional(),
 	teams: z.array(z.lazy(() => require('./team.types').teamSchema)).optional(),
 	tags: z.array(z.lazy(() => require('./tag.types').tagSchema)).optional(),

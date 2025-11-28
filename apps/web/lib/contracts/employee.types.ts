@@ -7,20 +7,20 @@ import { basePerTenantEntityModelSchema } from './common.types';
 
 export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
-	contactId: z.string().nullable().optional(),
-	organizationPositionId: z.string().nullable().optional(),
+	contactId: z.string().nullish(),
+	organizationPositionId: z.string().nullish(),
 	
-	employeeLevel: z.string().nullable().optional(),
-	short_description: z.string().max(200).nullable().optional(),
-	description: z.string().nullable().optional(),
-	startedWorkOn: z.union([z.date(), z.string()]).nullable().optional(),
-	endWork: z.union([z.date(), z.string()]).nullable().optional(),
+	employeeLevel: z.string().nullish(),
+	short_description: z.string().max(200).nullish(),
+	description: z.string().nullish(),
+	startedWorkOn: z.union([z.date(), z.string()]).nullish(),
+	endWork: z.union([z.date(), z.string()]).nullish(),
 	
-	payPeriod: z.string().nullable().optional(),
-	billRateValue: z.number().min(0).nullable().optional(),
-	billRateCurrency: z.string().length(3).nullable().optional(), // ISO 4217
-	minimumBillingRate: z.number().min(0).nullable().optional(),
-	reWeeklyLimit: z.number().min(0).nullable().optional(), // Weekly hours limit
+	payPeriod: z.string().nullish(),
+	billRateValue: z.number().min(0).nullish(),
+	billRateCurrency: z.string().length(3).nullish(), // ISO 4217
+	minimumBillingRate: z.number().min(0).nullish(),
+	reWeeklyLimit: z.number().min(0).nullish(), // Weekly hours limit
 	
 	show_anonymous_bonus: z.boolean().default(false).optional(),
 	show_average_bonus: z.boolean().default(false).optional(),
@@ -37,7 +37,7 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	allowScreenshotCapture: z.boolean().default(true).optional(),
 	
 	totalWorkHours: z.number().min(0).default(0).optional(),
-	availableHours: z.number().min(0).nullable().optional(),
+	availableHours: z.number().min(0).nullish(),
 	todayDuration: z.number().min(0).default(0).optional(),
 	weeklyDuration: z.number().min(0).default(0).optional()
 });
@@ -45,11 +45,11 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 export const employeeWithRelationsSchema = employeeSchema.extend({
 	user: z.lazy(() => {
 		const { userSchema } = require('./user.types');
-		return userSchema.nullable().optional();
+		return userSchema.nullish();
 	}),
 	organizationPosition: z.lazy(() => {
 		const { organizationPositionSchema } = require('./organization.types');
-		return organizationPositionSchema.nullable().optional();
+		return organizationPositionSchema.nullish();
 	}),
 	teams: z.lazy(() => {
 		const { organizationTeamSchema } = require('./team.types');
@@ -108,7 +108,7 @@ export const createEmployeeRequestSchema = z.object({
 
 export const updateEmployeeRequestSchema = createEmployeeRequestSchema.partial().extend({
 	id: z.string(),
-	endWork: z.string().nullable().optional(),
+	endWork: z.string().nullish(),
 	isActive: z.boolean().optional(),
 	isJobSearchActive: z.boolean().optional()
 });

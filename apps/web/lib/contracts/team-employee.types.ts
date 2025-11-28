@@ -4,10 +4,10 @@ import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
 export const teamEmployeeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   organizationTeamId: z.string(),
   employeeId: z.string(),
-  roleId: z.string().nullable().optional(),
+  roleId: z.string().nullish(),
   order: z.number().optional(),
   isTrackingEnabled: z.boolean().default(true),
-  activeTaskId: z.string().nullable().optional(),
+  activeTaskId: z.string().nullish(),
   isManager: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
@@ -15,8 +15,8 @@ export const teamEmployeeSchema = basePerTenantAndOrganizationEntityModelSchema.
 export const teamEmployeeWithRelationsSchema = teamEmployeeSchema.extend({
   organizationTeam: z.lazy(() => require('./team.types').teamSchema),
   employee: z.lazy(() => require('./employee.types').employeeSchema),
-  role: z.lazy(() => require('./role.types').roleSchema).nullable().optional(),
-  activeTask: z.lazy(() => require('./task.types').taskSchema).nullable().optional(),
+  role: z.lazy(() => require('./role.types').roleSchema).nullish(),
+  activeTask: z.lazy(() => require('./task.types').taskSchema).nullish(),
   totalWorkedTasks: z.lazy(() => z.array(require('./task.types').taskStatisticsSchema)).optional(),
   totalTodayTasks: z.lazy(() => z.array(require('./task.types').taskStatisticsSchema)).optional(),
 });
@@ -24,8 +24,8 @@ export const teamEmployeeWithRelationsSchema = teamEmployeeSchema.extend({
 export const teamEmployeeWithTimerSchema = teamEmployeeWithRelationsSchema.extend({
   duration: z.number().optional(),
   running: z.boolean().optional(),
-  lastLog: z.lazy(() => require('./time-log.types').timeLogSchema).nullable().optional(),
-  lastWorkedTask: z.lazy(() => require('./task.types').taskSchema).nullable().optional(),
+  lastLog: z.lazy(() => require('./time-log.types').timeLogSchema).nullish(),
+  lastWorkedTask: z.lazy(() => require('./task.types').taskSchema).nullish(),
   timerStatus: z.lazy(() => require('./timer.types').timerStatusSchema).optional(),
 });
 

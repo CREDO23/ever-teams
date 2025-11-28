@@ -21,12 +21,12 @@ export const urlMetaDataSchema = z.object({
 
 export const activitySchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   title: z.string(),
-  description: z.string().nullable().optional(),
-  timeSlotId: z.string().nullable().optional(),
-  taskId: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  timeSlotId: z.string().nullish(),
+  taskId: z.string().nullish(),
+  projectId: z.string().nullish(),
   employeeId: z.string(),
-  metaData: z.union([z.string(), urlMetaDataSchema]).nullable().optional(),
+  metaData: z.union([z.string(), urlMetaDataSchema]).nullish(),
   date: z.string(),
   time: z.string(),
   duration: z.number().optional(),
@@ -37,9 +37,9 @@ export const activitySchema = basePerTenantAndOrganizationEntityModelSchema.exte
 });
 
 export const activityWithRelationsSchema = activitySchema.extend({
-  timeSlot: z.lazy(() => require('./time-slot.types').timeSlotSchema).nullable().optional(),
-  task: z.lazy(() => require('./task.types').taskSchema).nullable().optional(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullable().optional(),
+  timeSlot: z.lazy(() => require('./time-slot.types').timeSlotSchema).nullish(),
+  task: z.lazy(() => require('./task.types').taskSchema).nullish(),
+  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
   employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
 });
 

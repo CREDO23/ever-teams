@@ -16,21 +16,21 @@ export const taskStatusNameEnum = z.enum([
 export const taskStatusSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
-  description: z.string().nullable().optional(),
-  icon: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
-  order: z.number().nullable().optional(),
+  description: z.string().nullish(),
+  icon: z.string().nullish(),
+  color: z.string().nullish(),
+  order: z.number().nullish(),
   isSystem: z.boolean().default(false).optional(),
   isCollapsed: z.boolean().default(false).optional(),
   isDefault: z.boolean().default(false).optional(),
-  template: taskStatusNameEnum.nullable().optional(),
+  template: taskStatusNameEnum.nullish(),
   // Workflow flags
   isTodo: z.boolean().default(false).optional(),
   isInProgress: z.boolean().default(false).optional(),
   isDone: z.boolean().default(false).optional(),
   // Foreign keys
-  organizationTeamId: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
+  projectId: z.string().nullish(),
 });
 
 // ============ With Relations ============

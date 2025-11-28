@@ -14,11 +14,11 @@ export const taskLinkedIssueSchema = basePerTenantAndOrganizationEntityModelSche
   action: z.number().optional(),
   issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
   issueNumber: z.string(),
-  issueId: z.string().nullable().optional(),
-  issueTitle: z.string().nullable().optional(),
-  issueUrl: z.string().url().nullable().optional(),
-  issueStatus: z.string().nullable().optional(),
-  issueBody: z.string().nullable().optional(),
+  issueId: z.string().nullish(),
+  issueTitle: z.string().nullish(),
+  issueUrl: z.string().url().nullish(),
+  issueStatus: z.string().nullish(),
+  issueBody: z.string().nullish(),
 });
 
 export const taskLinkedIssueWithRelationsSchema = taskLinkedIssueSchema.extend({

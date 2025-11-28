@@ -15,13 +15,13 @@ export const taskPriorityEnum = z.enum([
 export const taskPrioritySchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
-  description: z.string().nullable().optional(),
-  icon: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  icon: z.string().nullish(),
+  color: z.string().nullish(),
   isSystem: z.boolean().default(false).optional(),
   // Foreign keys
-  organizationTeamId: z.string().nullable().optional(),
-  projectId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullish(),
+  projectId: z.string().nullish(),
 });
 
 // ============ With Relations ============
@@ -61,8 +61,8 @@ export const createTaskPriorityRequestSchema = z.object({
   color: z.string().optional(),
   projectId: z.string().optional(),
   organizationId: z.string(),
-  tenantId: z.string().nullable().optional(),
-  organizationTeamId: z.string().nullable().optional(),
+  tenantId: z.string().nullish(),
+  organizationTeamId: z.string().nullish(),
 });
 
 export const updateTaskPriorityRequestSchema = createTaskPriorityRequestSchema.partial();

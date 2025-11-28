@@ -3,11 +3,11 @@ import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
 
 // ============ Database Schema ============
 export const languageSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
-  name: z.string().nullable().optional(),
-  code: z.string().nullable().optional(),
+  name: z.string().nullish(),
+  code: z.string().nullish(),
   is_system: z.boolean().default(false).optional(),
-  description: z.string().nullable().optional(),
-  color: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  color: z.string().nullish(),
 });
 
 // ============ With Relations ============

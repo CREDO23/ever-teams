@@ -24,10 +24,10 @@ export const integrationSchema = basePerTenantEntityModelSchema.extend({
   type: integrationTypeEnum,
   status: integrationStatusEnum,
   config: z.record(z.any()).optional(),
-  accessToken: z.string().nullable().optional(),
-  refreshToken: z.string().nullable().optional(),
-  webhookUrl: z.string().nullable().optional(),
-  webhookSecret: z.string().nullable().optional(),
+  accessToken: z.string().nullish(),
+  refreshToken: z.string().nullish(),
+  webhookUrl: z.string().nullish(),
+  webhookSecret: z.string().nullish(),
   metadata: z.record(z.any()).optional()
 });
 

@@ -4,13 +4,13 @@ import { TimeLogSourceEnum, TimeLogTypeEnum } from './timer.types';
 
 export const timeSlotSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
   employeeId: z.string(),
-  projectId: z.string().nullable().optional(),
+  projectId: z.string().nullish(),
   duration: z.number().optional(),
   keyboard: z.number().optional(),
   mouse: z.number().optional(),
   overall: z.number().optional(),
   startedAt: z.string().datetime(),
-  stoppedAt: z.string().datetime().nullable().optional(),
+  stoppedAt: z.string().datetime().nullish(),
   percentage: z.number().optional(),
   keyboardPercentage: z.number().optional(),
   mousePercentage: z.number().optional(),
@@ -19,7 +19,7 @@ export const timeSlotSchema = basePerTenantAndOrganizationEntityModelSchema.exte
 
 export const timeSlotWithRelationsSchema = timeSlotSchema.extend({
   employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullable().optional(),
+  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
   activities: z.lazy(() => z.array(require('./activity.types').activitySchema)).optional(),
   screenshots: z.lazy(() => z.array(require('./screenshot.types').screenshotSchema)).optional(),
   timeLogs: z.lazy(() => z.array(require('./time-log.types').timeLogSchema)).optional(),
@@ -39,7 +39,7 @@ export const addManualTimeRequestSchema = z.object({
   editedAt: z.string().datetime().optional(),
   tags: z.array(z.string()).optional(),
   isBillable: z.boolean().optional(),
-  organizationId: z.string().nullable().optional(),
+  organizationId: z.string().nullish(),
   tenantId: z.string().optional(),
   logType: z.nativeEnum(TimeLogTypeEnum),
   source: z.literal(TimeLogSourceEnum.WEB),
