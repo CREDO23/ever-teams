@@ -25,12 +25,12 @@ export const integrationSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string(),
 	type: integrationTypeEnum,
 	status: integrationStatusEnum,
-	config: z.record(z.any()).optional(),
+	config: z.record(z.unknown()).optional(),
 	accessToken: z.string().nullish(),
 	refreshToken: z.string().nullish(),
 	webhookUrl: z.string().nullish(),
 	webhookSecret: z.string().nullish(),
-	metadata: z.record(z.any()).optional()
+	metadata: z.record(z.unknown()).optional()
 });
 
 export const integrationWithRelationsSchema = integrationSchema.extend({
@@ -52,7 +52,7 @@ export const listIntegrationsRequestSchema = z.object({
 export const createIntegrationRequestSchema = z.object({
 	name: z.string(),
 	type: integrationTypeEnum,
-	config: z.record(z.any()).optional(),
+	config: z.record(z.unknown()).optional(),
 	accessToken: z.string().optional(),
 	refreshToken: z.string().optional(),
 	webhookUrl: z.string().optional(),

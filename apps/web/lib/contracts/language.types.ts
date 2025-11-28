@@ -13,7 +13,7 @@ export const languageSchema = basePerTenantEntityModelSchema.extend({
 // ============ With Relations ============
 export const languageWithRelationsSchema = languageSchema.extend({
 	isSelected: z.boolean().optional(),
-	items: z.array(z.any()).optional(),
+	items: z.array(z.unknown()).optional(),
 });
 
 // ============ Request Schemas ============

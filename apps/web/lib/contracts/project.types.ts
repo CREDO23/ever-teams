@@ -64,7 +64,7 @@ export const projectSchema = basePerTenantEntityModelSchema.extend({
 	archiveTasksIn: z.number().nullish(),
 	closeTasksIn: z.number().nullish(),
   // Settings
-	customFields: z.record(z.any()).nullish(),
+	customFields: z.record(z.unknown()).nullish(),
 	isTasksAutoSync: z.boolean().default(false).optional(),
 	isTasksAutoSyncOnLabel: z.boolean().default(false).optional(),
 	syncTag: z.string().nullish(),s
@@ -135,7 +135,7 @@ export const createProjectRequestSchema = z.object({
 	projectUrl: z.string().optional(),
 	description: z.string().optional(),
 	color: z.string().optional(),
-	tags: z.array(z.any()).optional(),
+	tags: z.lazy(() => z.array(tagSchema).optional()),
 	imageUrl: z.string().nullish(),
 	imageId: z.string().optional(),
 	budget: z.number().optional(),
@@ -147,7 +147,7 @@ export const createProjectRequestSchema = z.object({
 	currency: z.string().optional(),
 	memberIds: z.array(z.string()).optional(),
 	managerIds: z.array(z.string()).optional(),
-	teams: z.array(z.any()).optional(),
+	teams: z.lazy(() => z.array(teamSchema).optional()),
 	status: z.string().optional(),
 	isActive: z.boolean().optional(),
 	isArchived: z.boolean().optional(),

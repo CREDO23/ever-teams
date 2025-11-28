@@ -4,9 +4,11 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
-import { } from './organization.types';
 import { teamSchema } from './team.types';
 import { userSchema } from './user.types';
+import { timeLogSchema } from './time-log.types';
+import { timeSlotSchema } from './time-slot.types';
+import { taskSchema } from './task.types';
 
 export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
@@ -44,9 +46,9 @@ export const employeeWithRelationsSchema = employeeSchema.extend({
 	user: z.lazy(() => userSchema.nullish()),
 	organizationPositionId: z.string().nullish(),
 	teams: z.lazy(() => z.array(teamSchema).optional()),
-	timeLogs: z.array(z.any()).optional(),
-	timeSlots: z.array(z.any()).optional(),
-	tasks: z.array(z.any()).optional()
+	timeLogs: z.lazy(() => z.array(timeLogSchema).optional()),
+	timeSlots: z.lazy(() => z.array(timeSlotSchema).optional()),
+	tasks: z.lazy(() => z.array(taskSchema).optional())
 });
 
 export const getEmployeeRequestSchema = z.object({

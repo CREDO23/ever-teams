@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { taskSchema } from './task.types';
 import { timeLogSchema } from './time-log.types';
+import { tagSchema } from './tag.types';
 
 export enum TimerStatusEnum {
   RUNNING = 'running',
@@ -48,7 +49,7 @@ export const updateTimerStatusRequestSchema = z.object({
 	taskId: z.string().optional(),
 	logType: z.literal('TRACKED'),
 	source: z.nativeEnum(TimeLogSourceEnum),
-	tags: z.array(z.any()),
+	tags: z.array(tagSchema),
 	organizationTeamId: z.string().optional(),
 });
 

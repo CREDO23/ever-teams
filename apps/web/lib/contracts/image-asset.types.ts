@@ -40,7 +40,7 @@ export const getImageAssetRequestSchema = z.object({
 export const createImageAssetRequestSchema = z.object({
 	organizationId: z.string(),
 	tenantId: z.string(),
-	file: z.instanceof(File).optional().or(z.any()),
+	file: z.union([z.instanceof(File), z.instanceof(Blob), z.instanceof(ArrayBuffer)]).optional(),
 	name: z.string().optional(),
 	isFeatured: z.boolean().optional(),
 });
