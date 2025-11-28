@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { projectSchema } from './project.types';
 
 export const projectEmployeeSchema = basePerTenantEntityModelSchema.extend({
   projectId: z.string(),
@@ -10,8 +12,8 @@ export const projectEmployeeSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const projectEmployeeWithRelationsSchema = projectEmployeeSchema.extend({
-  project: z.lazy(() => require('./project.types').projectSchema),
-  employee: z.lazy(() => require('./employee.types').employeeSchema),
+  project: z.lazy(() => projectSchema),
+  employee: z.lazy(() => employeeSchema),
 });
 
 export const assignEmployeeToProjectSchema = z.object({

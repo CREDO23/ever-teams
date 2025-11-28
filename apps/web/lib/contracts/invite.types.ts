@@ -4,6 +4,11 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { organizationSchema } from './organization.types';
+import { roleSchema } from './role.types';
+import { teamSchema } from './team.types';
+import { userSchema } from './user.types';
 
 export const inviteStatusEnumSchema = z.enum(['PENDING', 'ACCEPTED', 'EXPIRED', 'REJECTED']);
 
@@ -37,12 +42,12 @@ export const inviteProjectSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const inviteWithRelationsSchema = inviteSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
-	invitedBy: z.lazy(() => require('./user.types').userSchema).nullish(),
-	role: z.lazy(() => require('./role.types').roleSchema).nullish(),
-	user: z.lazy(() => require('./user.types').userSchema).nullish(),
-	employee: z.lazy(() => require('./employee.types').employeeSchema).nullish(),
-	teams: z.array(z.lazy(() => require('./team.types').teamSchema)).optional(),
+	organization: z.lazy(() => organizationSchema).nullish(),
+	invitedBy: z.lazy(() => userSchema).nullish(),
+	role: z.lazy(() => roleSchema).nullish(),
+	user: z.lazy(() => userSchema).nullish(),
+	employee: z.lazy(() => employeeSchema).nullish(),
+	teams: z.array(z.lazy(() => teamSchema)).optional(),
 	projects: z.array(z.object({
 		id: z.string(),
 		name: z.string()
@@ -149,8 +154,8 @@ export const bulkCreateInvitesResponseSchema = z.object({
 
 export const acceptInviteResponseSchema = z.object({
 	data: z.object({
-		user: z.lazy(() => require('./user.types').userSchema),
-		employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
+		user: z.lazy(() => userSchema),
+		employee: z.lazy(() => employeeSchema).optional(),
 		token: z.string().optional() // Auth token if new user
 	}),
 	message: z.string().optional(),

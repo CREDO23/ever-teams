@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============ Database Schema ============
-export const languageSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const languageSchema = basePerTenantEntityModelSchema.extend({
   name: z.string().nullish(),
   code: z.string().nullish(),
   is_system: z.boolean().default(false).optional(),

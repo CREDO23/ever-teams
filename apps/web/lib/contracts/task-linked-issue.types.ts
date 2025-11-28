@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { taskSchema } from './task.types';
 
 export enum TaskLinkedIssueTypeEnum {
   GITHUB = 'Github',
@@ -9,7 +10,7 @@ export enum TaskLinkedIssueTypeEnum {
   CUSTOM = 'Custom'
 }
 
-export const taskLinkedIssueSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const taskLinkedIssueSchema = basePerTenantEntityModelSchema.extend({
   taskId: z.string(),
   action: z.number().optional(),
   issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
@@ -22,7 +23,7 @@ export const taskLinkedIssueSchema = basePerTenantAndOrganizationEntityModelSche
 });
 
 export const taskLinkedIssueWithRelationsSchema = taskLinkedIssueSchema.extend({
-  task: z.lazy(() => require('./task.types').taskSchema),
+  task: z.lazy(() => taskSchema),
 });
 
 export const createTaskLinkedIssueRequestSchema = z.object({

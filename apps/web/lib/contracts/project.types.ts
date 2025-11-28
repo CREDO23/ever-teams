@@ -1,5 +1,12 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { imageAssetSchema } from './image-asset.types';
+import { projectEmployeeSchema } from './project-employee.types';
+import { projectRepositorySchema } from './project-repository.types';
+import { tagSchema } from './tag.types';
+import { taskSchema } from './task.types';
+import { teamSchema } from './team.types';
 
 // ============ Enums ============
 export const projectBillingEnum = z.enum([
@@ -31,7 +38,7 @@ export const taskListTypeEnum = z.enum([
 ]);
 
 // ============ Database Schema ============
-export const projectSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const projectSchema = basePerTenantEntityModelSchema.extend({
   name: z.string(),
   startDate: z.date().nullish(),
   endDate: z.date().nullish(),
@@ -70,30 +77,28 @@ export const projectSchema = basePerTenantAndOrganizationEntityModelSchema.exten
 // ============ With Relations ============
 export const projectWithRelationsSchema = projectSchema.extend({
   image: z.lazy(() =>
-    require('./image-asset.types').imageAssetSchema
+    imageAssetSchema
   ).optional(),
   defaultAssignee: z.lazy(() =>
-    require('./employee.types').employeeSchema
+    employeeSchema
   ).optional(),
   tags: z.lazy(() =>
-    z.array(require('./tag.types').tagSchema)
+    z.array(tagSchema)
   ).optional(),
   members: z.lazy(() =>
-    z.array(require('./project-employee.types').projectEmployeeSchema)
+    z.array(projectEmployeeSchema)
   ).optional(),
   teams: z.lazy(() =>
-    z.array(require('./team.types').teamSchema)
+    z.array(teamSchema)
   ).optional(),
   tasks: z.lazy(() =>
-    z.array(require('./task.types').taskSchema)
+    z.array(taskSchema)
   ).optional(),
   repository: z.lazy(() =>
-    require('./project-repository.types').projectRepositorySchema
   ).optional(),
 });
 
 // ============ Project Repository Schema ============
-export const projectRepositorySchema = z.object({
   id: z.string(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
@@ -175,7 +180,6 @@ export type ProjectRelation = z.infer<typeof projectRelationEnum>;
 export type TaskListType = z.infer<typeof taskListTypeEnum>;
 export type Project = z.infer<typeof projectSchema>;
 export type ProjectWithRelations = z.infer<typeof projectWithRelationsSchema>;
-export type ProjectRepository = z.infer<typeof projectRepositorySchema>;
 export type GetProjectRequest = z.infer<typeof getProjectRequestSchema>;
 export type GetProjectsRequest = z.infer<typeof getProjectsRequestSchema>;
 export type CreateProjectRequest = z.infer<typeof createProjectRequestSchema>;

@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { projectSchema } from './project.types';
+import { taskSchema } from './task.types';
+import { teamEmployeeSchema } from './team-employee.types';
+import { timeSlotSchema } from './time-slot.types';
 
 export enum ActivityTypeEnum {
   URL = 'URL',
@@ -19,7 +24,7 @@ export const urlMetaDataSchema = z.object({
   imageUrl: z.string().optional(),
 });
 
-export const activitySchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const activitySchema = basePerTenantEntityModelSchema.extend({
   title: z.string(),
   description: z.string().nullish(),
   timeSlotId: z.string().nullish(),
@@ -37,15 +42,15 @@ export const activitySchema = basePerTenantAndOrganizationEntityModelSchema.exte
 });
 
 export const activityWithRelationsSchema = activitySchema.extend({
-  timeSlot: z.lazy(() => require('./time-slot.types').timeSlotSchema).nullish(),
-  task: z.lazy(() => require('./task.types').taskSchema).nullish(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
-  employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
+  timeSlot: z.lazy(() => timeSlotSchema).nullish(),
+  task: z.lazy(() => taskSchema).nullish(),
+  project: z.lazy(() => projectSchema).nullish(),
+  employee: z.lazy(() => employeeSchema).optional(),
 });
 
 export const activityFilterSchema = z.object({
   type: z.enum(['DATE', 'TICKET']),
-  member: z.lazy(() => require('./team-employee.types').teamEmployeeSchema).nullable(),
+  member: z.lazy(() => teamEmployeeSchema).nullable(),
   taskId: z.string().optional(),
   dateStart: z.string().datetime().optional(),
   dateStop: z.string().datetime().optional(),

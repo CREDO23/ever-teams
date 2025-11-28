@@ -4,6 +4,10 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { organizationSchema } from './organization.types';
+import { roleSchema } from './role.types';
+import { userSchema } from './user.types';
 
 export const permissionSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Permission name is required'),
@@ -30,14 +34,14 @@ export const rolePermissionSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const permissionWithRelationsSchema = permissionSchema.extend({
-	role: z.lazy(() => require('./role.types').roleSchema).nullish()
+	role: z.lazy(() => roleSchema).nullish()
 });
 
 export const roleWithRelationsSchema = roleSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
+	organization: z.lazy(() => organizationSchema).nullish(),
 	permissions: z.array(permissionSchema).optional(),
-	users: z.array(z.lazy(() => require('./user.types').userSchema)).optional(),
-	employees: z.array(z.lazy(() => require('./employee.types').employeeSchema)).optional()
+	users: z.array(z.lazy(() => userSchema)).optional(),
+	employees: z.array(z.lazy(() => employeeSchema)).optional()
 });
 
 export const getRoleRequestSchema = z.object({

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { organizationSchema } from './organization.types';
+import { tenantSchema } from './tenant.types';
 
 export const integrationTypeEnum = z.enum([
   'GitHub',
@@ -32,8 +34,8 @@ export const integrationSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const integrationWithRelationsSchema = integrationSchema.extend({
-  organization: z.lazy(() => require('./organization.types').organizationSchema).optional(),
-  tenant: z.lazy(() => require('./tenant.types').tenantSchema).optional()
+  organization: z.lazy(() => organizationSchema).optional(),
+  tenant: z.lazy(() => tenantSchema).optional()
 });
 
 export const getIntegrationRequestSchema = z.object({

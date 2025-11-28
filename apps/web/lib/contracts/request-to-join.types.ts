@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { organizationSchema } from './organization.types';
+import { teamSchema } from './team.types';
+import { userSchema } from './user.types';
 
 export const requestToJoinStatusEnum = z.enum([
   'pending',
@@ -22,9 +25,9 @@ export const requestToJoinSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const requestToJoinWithRelationsSchema = requestToJoinSchema.extend({
-  organizationTeam: z.lazy(() => require('./team.types').teamSchema).optional(),
-  organization: z.lazy(() => require('./organization.types').organizationSchema).optional(),
-  user: z.lazy(() => require('./user.types').userSchema).optional()
+  organizationTeam: z.lazy(() => teamSchema).optional(),
+  organization: z.lazy(() => organizationSchema).optional(),
+  user: z.lazy(() => userSchema).optional()
 });
 
 export const joinTeamRequestSchema = z.object({

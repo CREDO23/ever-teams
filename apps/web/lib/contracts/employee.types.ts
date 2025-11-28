@@ -4,6 +4,9 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { } from './organization.types';
+import { teamSchema } from './team.types';
+import { userSchema } from './user.types';
 
 export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
@@ -43,18 +46,9 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const employeeWithRelationsSchema = employeeSchema.extend({
-	user: z.lazy(() => {
-		const { userSchema } = require('./user.types');
-		return userSchema.nullish();
-	}),
-	organizationPosition: z.lazy(() => {
-		const { organizationPositionSchema } = require('./organization.types');
-		return organizationPositionSchema.nullish();
-	}),
-	teams: z.lazy(() => {
-		const { organizationTeamSchema } = require('./team.types');
-		return z.array(organizationTeamSchema).optional();
-	}),
+	user: z.lazy(() => userSchema.nullish()),
+	organizationPositionId: z.string().nullish(),
+	teams: z.lazy(() => z.array(teamSchema).optional()),
 	timeLogs: z.array(z.any()).optional(), // TimeLog schema would be defined separately
 	timeSlots: z.array(z.any()).optional(), // TimeSlot schema would be defined separately
 	tasks: z.array(z.any()).optional() // Task schema would be defined separately

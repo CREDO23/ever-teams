@@ -1,5 +1,7 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { projectSchema } from './project.types';
+import { teamSchema } from './team.types';
 
 // ============ Enums ============
 export const taskSizeEnum = z.enum([
@@ -12,7 +14,7 @@ export const taskSizeEnum = z.enum([
 ]);
 
 // ============ Database Schema ============
-export const taskSizeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const taskSizeSchema = basePerTenantEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
   description: z.string().nullish(),
@@ -28,10 +30,10 @@ export const taskSizeSchema = basePerTenantAndOrganizationEntityModelSchema.exte
 export const taskSizeWithRelationsSchema = taskSizeSchema.extend({
   fullIconUrl: z.string().url().optional(),
   organizationTeam: z.lazy(() =>
-    require('./team.types').teamSchema
+    teamSchema
   ).optional(),
   project: z.lazy(() =>
-    require('./project.types').projectSchema
+    projectSchema
   ).optional(),
 });
 

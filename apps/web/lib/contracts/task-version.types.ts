@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { projectSchema } from './project.types';
+import { teamSchema } from './team.types';
 
 // ============ Database Schema ============
-export const taskVersionSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const taskVersionSchema = basePerTenantEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
   description: z.string().nullish(),
@@ -18,10 +20,10 @@ export const taskVersionSchema = basePerTenantAndOrganizationEntityModelSchema.e
 export const taskVersionWithRelationsSchema = taskVersionSchema.extend({
   fullIconUrl: z.string().url().optional(),
   project: z.lazy(() =>
-    require('./project.types').projectSchema
+    projectSchema
   ).optional(),
   organizationTeam: z.lazy(() =>
-    require('./team.types').teamSchema
+    teamSchema
   ).optional(),
 });
 

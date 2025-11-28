@@ -1,5 +1,8 @@
 import { z } from 'zod';
 import { baseEntitySchema } from './common.types';
+import { imageAssetSchema } from './image-asset.types';
+import { organizationSchema } from './organization.types';
+import { rolePermissionSchema } from './role.types';
 
 // ============ Database Schema ============
 export const tenantSchema = baseEntitySchema.extend({
@@ -12,13 +15,13 @@ export const tenantSchema = baseEntitySchema.extend({
 // ============ With Relations ============
 export const tenantWithRelationsSchema = tenantSchema.extend({
   organizations: z.lazy(() =>
-    z.array(require('./organization.types').organizationSchema)
+    z.array(organizationSchema)
   ).optional(),
   rolePermissions: z.lazy(() =>
-    z.array(require('./role.types').rolePermissionSchema)
+    z.array(rolePermissionSchema)
   ).optional(),
   image: z.lazy(() => 
-    require('./image-asset.types').imageAssetSchema
+    imageAssetSchema
   ).optional(),
 });
 

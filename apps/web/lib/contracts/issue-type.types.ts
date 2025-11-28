@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { imageAssetSchema } from './image-asset.types';
+import { projectSchema } from './project.types';
+import { teamSchema } from './team.types';
 
 // ============ Enums ============
 export const issueTypeEnum = z.enum([
@@ -11,7 +14,7 @@ export const issueTypeEnum = z.enum([
 ]);
 
 // ============ Database Schema ============
-export const issueTypeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const issueTypeSchema = basePerTenantEntityModelSchema.extend({
   name: z.string(),
   value: z.string(),
   description: z.string().nullish(),
@@ -29,13 +32,13 @@ export const issueTypeSchema = basePerTenantAndOrganizationEntityModelSchema.ext
 export const issueTypeWithRelationsSchema = issueTypeSchema.extend({
   fullIconUrl: z.string().url().optional(),
   organizationTeam: z.lazy(() =>
-    require('./team.types').teamSchema
+    teamSchema
   ).optional(),
   project: z.lazy(() =>
-    require('./project.types').projectSchema
+    projectSchema
   ).optional(),
   image: z.lazy(() =>
-    require('./image-asset.types').imageAssetSchema
+    imageAssetSchema
   ).optional(),
 });
 

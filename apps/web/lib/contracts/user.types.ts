@@ -3,6 +3,13 @@
  */
 
 import { z } from 'zod';
+import { employeeSchema } from './employee.types';
+import { inviteSchema } from './invite.types';
+import { organizationSchema } from './organization.types';
+import { roleSchema } from './role.types';
+import { socialAccountSchema } from './social-account.types';
+import { tagSchema } from './tag.types';
+import { teamSchema } from './team.types';
 import { 
 	basePerTenantEntityModelSchema,
 	relationalImageAssetSchema,
@@ -59,53 +66,23 @@ export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const userWithRelationsSchema = userSchema.extend({
-	role: z.lazy(() => {
-		const { roleSchema } = require('./role.types');
-		return roleSchema.nullish();
-	}),
-	employee: z.lazy(() => {
-		const { employeeSchema } = require('./employee.types');
-		return employeeSchema.nullish();
-	}),
-	defaultTeam: z.lazy(() => {
-		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.nullish();
-	}),
-	lastTeam: z.lazy(() => {
-		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.nullish();
-	}),
-	defaultOrganization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullish();
-	}),
-	lastOrganization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullish();
-	}),
-	tags: z.lazy(() => {
-		const { tagSchema } = require('./tag.types');
-		return z.array(tagSchema).optional();
-	}),
+	role: z.lazy(() => roleSchema.nullish()),
+	employee: z.lazy(() => employeeSchema.nullish()),
+	defaultTeam: z.lazy(() => teamSchema.nullish()),
+	lastTeam: z.lazy(() => teamSchema.nullish()),
+	defaultOrganization: z.lazy(() => organizationSchema.nullish()),
+	lastOrganization: z.lazy(() => organizationSchema.nullish()),
+	tags: z.lazy(() => z.array(tagSchema).optional()),
 	organizations: z.lazy(() => {
 		return z.array(userOrganizationWithRelationsSchema).optional();
 	}),
-	invites: z.lazy(() => {
-		const { inviteSchema } = require('./invite.types');
-		return z.array(inviteSchema).optional();
-	}),
-	socialAccounts: z.lazy(() => {
-		const { socialAccountSchema } = require('./social-account.types');
-		return z.array(socialAccountSchema).optional();
-	})
+	invites: z.lazy(() => z.array(inviteSchema).optional()),
+	socialAccounts: z.lazy(() => z.array(socialAccountSchema).optional())
 });
 
 export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
 	user: z.lazy(() => userSchema).nullish(),
-	organization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.nullish();
-	})
+	organization: z.lazy(() => organizationSchema.nullish())
 });
 
 // Authentication Requests

@@ -4,6 +4,8 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { organizationSchema } from './organization.types';
+import { teamSchema } from './team.types';
 
 export const tagSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Tag name is required'),
@@ -23,8 +25,8 @@ export const entityTagSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const tagWithRelationsSchema = tagSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
-	organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
+	organization: z.lazy(() => organizationSchema).nullish(),
+	organizationTeam: z.lazy(() => teamSchema).nullish(),
 	entities: z.array(z.object({
 		id: z.string(),
 		type: z.string(),

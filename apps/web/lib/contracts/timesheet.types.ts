@@ -1,6 +1,9 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 import { TimeLogSourceEnum, TimeLogTypeEnum } from './timer.types';
+import { employeeSchema } from './employee.types';
+import { timeLogSchema } from './time-log.types';
+import { userSchema } from './user.types';
 
 export enum TimesheetStatusEnum {
   DRAFT = 'DRAFT',
@@ -10,7 +13,7 @@ export enum TimesheetStatusEnum {
   APPROVED = 'APPROVED'
 }
 
-export const timesheetSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const timesheetSchema = basePerTenantEntityModelSchema.extend({
   employeeId: z.string(),
   approvedById: z.string().nullish(),
   duration: z.number().optional(),
@@ -30,9 +33,9 @@ export const timesheetSchema = basePerTenantAndOrganizationEntityModelSchema.ext
 });
 
 export const timesheetWithRelationsSchema = timesheetSchema.extend({
-  employee: z.lazy(() => require('./employee.types').employeeSchema),
-  approvedBy: z.lazy(() => require('./user.types').userSchema).nullish(),
-  timeLogs: z.lazy(() => z.array(require('./time-log.types').timeLogSchema)).optional(),
+  employee: z.lazy(() => employeeSchema),
+  approvedBy: z.lazy(() => userSchema).nullish(),
+  timeLogs: z.lazy(() => z.array(timeLogSchema)).optional(),
 });
 
 export const updateTimesheetStatusRequestSchema = z.object({

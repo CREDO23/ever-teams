@@ -4,6 +4,8 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema, providerEnumSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { userSchema } from './user.types';
 
 export const socialAccountSchema = basePerTenantEntityModelSchema.extend({
 	provider: providerEnumSchema,
@@ -20,7 +22,7 @@ export const socialAccountSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const socialAccountWithRelationsSchema = socialAccountSchema.extend({
-	user: z.lazy(() => require('./user.types').userSchema).nullish()
+	user: z.lazy(() => userSchema).nullish()
 });
 
 export const getSocialAccountRequestSchema = z.object({
@@ -111,8 +113,8 @@ export const unlinkSocialAccountResponseSchema = z.object({
 
 export const socialAuthResponseSchema = z.object({
 	data: z.object({
-		user: z.lazy(() => require('./user.types').userSchema),
-		employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
+		user: z.lazy(() => userSchema),
+		employee: z.lazy(() => employeeSchema).optional(),
 		token: z.string(),
 		refreshToken: z.string().optional(),
 		isNewUser: z.boolean()

@@ -4,6 +4,12 @@
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { organizationSchema } from './organization.types';
+import { roleSchema } from './role.types';
+import { tagSchema } from './tag.types';
+import { teamSchema } from './team.types';
+import { userSchema } from './user.types';
 
 export const teamSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Team name is required'),
@@ -32,16 +38,16 @@ export const teamMemberSchema = basePerTenantEntityModelSchema.extend({
 });
 
 export const teamWithRelationsSchema = teamSchema.extend({
-	organization: z.lazy(() => require('./organization.types').organizationSchema).nullish(),
-	creator: z.lazy(() => require('./user.types').userSchema).nullish(),
-	members: z.array(z.lazy(() => require('./employee.types').employeeSchema)).optional(),
-	tags: z.array(z.lazy(() => require('./tag.types').tagSchema)).optional()
+	organization: z.lazy(() => organizationSchema).nullish(),
+	creator: z.lazy(() => userSchema).nullish(),
+	members: z.array(z.lazy(() => employeeSchema)).optional(),
+	tags: z.array(z.lazy(() => tagSchema)).optional()
 });
 
 export const teamMemberWithRelationsSchema = teamMemberSchema.extend({
-	team: z.lazy(() => require('./team.types').teamSchema).nullish(),
-	employee: z.lazy(() => require('./employee.types').employeeSchema).nullish(),
-	role: z.lazy(() => require('./role.types').roleSchema).nullish()
+	team: z.lazy(() => teamSchema).nullish(),
+	employee: z.lazy(() => employeeSchema).nullish(),
+	role: z.lazy(() => roleSchema).nullish()
 });
 
 export const getTeamRequestSchema = z.object({

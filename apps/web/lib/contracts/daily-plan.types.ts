@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { taskSchema } from './task.types';
+import { teamSchema } from './team.types';
 
 export enum DailyPlanStatusEnum {
   PENDING = 'pending',
@@ -8,7 +11,7 @@ export enum DailyPlanStatusEnum {
   CANCELLED = 'cancelled'
 }
 
-export const dailyPlanSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const dailyPlanSchema = basePerTenantEntityModelSchema.extend({
   date: z.string().datetime(),
   workTimePlanned: z.number().min(0),
   status: z.nativeEnum(DailyPlanStatusEnum),
@@ -17,9 +20,9 @@ export const dailyPlanSchema = basePerTenantAndOrganizationEntityModelSchema.ext
 });
 
 export const dailyPlanWithRelationsSchema = dailyPlanSchema.extend({
-  tasks: z.lazy(() => z.array(require('./task.types').taskSchema)).optional(),
-  employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
-  organizationTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
+  tasks: z.lazy(() => z.array(taskSchema)).optional(),
+  employee: z.lazy(() => employeeSchema).optional(),
+  organizationTeam: z.lazy(() => teamSchema).nullish(),
 });
 
 export const createDailyPlanRequestSchema = z.object({

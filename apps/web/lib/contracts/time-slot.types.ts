@@ -1,8 +1,15 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 import { TimeLogSourceEnum, TimeLogTypeEnum } from './timer.types';
+import { activitySchema } from './activity.types';
+import { employeeSchema } from './employee.types';
+import { projectSchema } from './project.types';
+import { screenshotSchema } from './screenshot.types';
+import { tagSchema } from './tag.types';
+import { timeLogSchema } from './time-log.types';
+import { timeSlotMinuteSchema } from './time-slot-minutes.types';
 
-export const timeSlotSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const timeSlotSchema = basePerTenantEntityModelSchema.extend({
   employeeId: z.string(),
   projectId: z.string().nullish(),
   duration: z.number().optional(),
@@ -18,13 +25,13 @@ export const timeSlotSchema = basePerTenantAndOrganizationEntityModelSchema.exte
 });
 
 export const timeSlotWithRelationsSchema = timeSlotSchema.extend({
-  employee: z.lazy(() => require('./employee.types').employeeSchema).optional(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
-  activities: z.lazy(() => z.array(require('./activity.types').activitySchema)).optional(),
-  screenshots: z.lazy(() => z.array(require('./screenshot.types').screenshotSchema)).optional(),
-  timeLogs: z.lazy(() => z.array(require('./time-log.types').timeLogSchema)).optional(),
-  timeSlotMinutes: z.lazy(() => z.array(require('./time-slot-minutes.types').timeSlotMinuteSchema)).optional(),
-  tags: z.lazy(() => z.array(require('./tag.types').tagSchema)).optional(),
+  employee: z.lazy(() => employeeSchema).optional(),
+  project: z.lazy(() => projectSchema).nullish(),
+  activities: z.lazy(() => z.array(activitySchema)).optional(),
+  screenshots: z.lazy(() => z.array(screenshotSchema)).optional(),
+  timeLogs: z.lazy(() => z.array(timeLogSchema)).optional(),
+  timeSlotMinutes: z.lazy(() => z.array(timeSlotMinuteSchema)).optional(),
+  tags: z.lazy(() => z.array(tagSchema)).optional(),
 });
 
 export const addManualTimeRequestSchema = z.object({

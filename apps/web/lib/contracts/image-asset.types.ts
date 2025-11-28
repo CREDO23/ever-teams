@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============ Enums ============
 export const fileStorageProviderEnum = z.enum([
@@ -12,7 +12,7 @@ export const fileStorageProviderEnum = z.enum([
 ]);
 
 // ============ Database Schema ============
-export const imageAssetSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
   name: z.string(),
   url: z.string().url(),
   thumb: z.string().nullish(),

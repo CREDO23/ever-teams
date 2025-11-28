@@ -1,7 +1,13 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { roleSchema } from './role.types';
+import { taskSchema, taskStatisticsSchema } from './task.types';
+import { teamSchema } from './team.types';
+import { timeLogSchema } from './time-log.types';
+import { timerStatusSchema } from './timer.types';
 
-export const teamEmployeeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const teamEmployeeSchema = basePerTenantEntityModelSchema.extend({
   organizationTeamId: z.string(),
   employeeId: z.string(),
   roleId: z.string().nullish(),
@@ -13,20 +19,20 @@ export const teamEmployeeSchema = basePerTenantAndOrganizationEntityModelSchema.
 });
 
 export const teamEmployeeWithRelationsSchema = teamEmployeeSchema.extend({
-  organizationTeam: z.lazy(() => require('./team.types').teamSchema),
-  employee: z.lazy(() => require('./employee.types').employeeSchema),
-  role: z.lazy(() => require('./role.types').roleSchema).nullish(),
-  activeTask: z.lazy(() => require('./task.types').taskSchema).nullish(),
-  totalWorkedTasks: z.lazy(() => z.array(require('./task.types').taskStatisticsSchema)).optional(),
-  totalTodayTasks: z.lazy(() => z.array(require('./task.types').taskStatisticsSchema)).optional(),
+  organizationTeam: z.lazy(() => teamSchema),
+  employee: z.lazy(() => employeeSchema),
+  role: z.lazy(() => roleSchema).nullish(),
+  activeTask: z.lazy(() => taskSchema).nullish(),
+  totalWorkedTasks: z.lazy(() => z.array(taskStatisticsSchema)).optional(),
+  totalTodayTasks: z.lazy(() => z.array(taskStatisticsSchema)).optional(),
 });
 
 export const teamEmployeeWithTimerSchema = teamEmployeeWithRelationsSchema.extend({
   duration: z.number().optional(),
   running: z.boolean().optional(),
-  lastLog: z.lazy(() => require('./time-log.types').timeLogSchema).nullish(),
-  lastWorkedTask: z.lazy(() => require('./task.types').taskSchema).nullish(),
-  timerStatus: z.lazy(() => require('./timer.types').timerStatusSchema).optional(),
+  lastLog: z.lazy(() => timeLogSchema).nullish(),
+  lastWorkedTask: z.lazy(() => taskSchema).nullish(),
+  timerStatus: z.lazy(() => timerStatusSchema).optional(),
 });
 
 export const createTeamEmployeeRequestSchema = z.object({

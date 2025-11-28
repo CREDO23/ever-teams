@@ -1,5 +1,14 @@
 import { z } from 'zod';
-import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
+import { employeeSchema } from './employee.types';
+import { issueTypeSchema } from './issue-type.types';
+import { projectSchema } from './project.types';
+import { tagSchema } from './tag.types';
+import { taskLinkedIssueSchema } from './task-linked-issue.types';
+import { taskPrioritySchema } from './task-priority.types';
+import { taskSizeSchema } from './task-size.types';
+import { taskStatusSchema } from './task-status.types';
+import { teamSchema } from './team.types';
 
 export enum TaskStatusEnum {
   OPEN = 'open',
@@ -25,7 +34,7 @@ export enum TaskSizeEnum {
   X_LARGE = 'x-large'
 }
 
-export const taskSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+export const taskSchema = basePerTenantEntityModelSchema.extend({
   title: z.string().min(1),
   number: z.number().optional(),
   public: z.boolean().default(true),
@@ -60,16 +69,16 @@ export const taskWithRelationsSchema = taskSchema.extend({
   parent: z.lazy(() => taskSchema).nullish(),
   children: z.lazy(() => z.array(taskSchema)).optional(),
   rootEpic: z.lazy(() => taskSchema).nullish(),
-  taskStatus: z.lazy(() => require('./task-status.types').taskStatusSchema).nullish(),
-  taskSize: z.lazy(() => require('./task-size.types').taskSizeSchema).nullish(),
-  taskPriority: z.lazy(() => require('./task-priority.types').taskPrioritySchema).nullish(),
-  taskType: z.lazy(() => require('./issue-type.types').issueTypeSchema).nullish(),
-  project: z.lazy(() => require('./project.types').projectSchema).nullish(),
-  members: z.lazy(() => z.array(require('./employee.types').employeeSchema)).optional(),
-  teams: z.lazy(() => z.array(require('./team.types').teamSchema)).optional(),
-  tags: z.lazy(() => z.array(require('./tag.types').tagSchema)).optional(),
-  linkedIssues: z.lazy(() => z.array(require('./task-linked-issue.types').taskLinkedIssueSchema)).optional(),
-  selectedTeam: z.lazy(() => require('./team.types').teamSchema).nullish(),
+  taskStatus: z.lazy(() => taskStatusSchema).nullish(),
+  taskSize: z.lazy(() => taskSizeSchema).nullish(),
+  taskPriority: z.lazy(() => taskPrioritySchema).nullish(),
+  taskType: z.lazy(() => issueTypeSchema).nullish(),
+  project: z.lazy(() => projectSchema).nullish(),
+  members: z.lazy(() => z.array(employeeSchema)).optional(),
+  teams: z.lazy(() => z.array(teamSchema)).optional(),
+  tags: z.lazy(() => z.array(tagSchema)).optional(),
+  linkedIssues: z.lazy(() => z.array(taskLinkedIssueSchema)).optional(),
+  selectedTeam: z.lazy(() => teamSchema).nullish(),
 });
 
 export const createTaskRequestSchema = z.object({
