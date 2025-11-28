@@ -5,9 +5,15 @@ import {
 	signInEmailResponseSchema,
 	signInPasscodeRequestSchema,
 	signInEmailConfirmResponseSchema,
+	refreshTokenRequestSchema,
+	refreshTokenResponseSchema,
+	signInWorkspaceRequestSchema,
+	authResponseSchema,
 	type RegisterWithAppRequest,
 	type SignInEmailRequest,
-	type SignInPasscodeRequest
+	type SignInPasscodeRequest,
+	type RefreshTokenRequest,
+	type SignInWorkspaceRequest
 } from '../contracts/auth.types';
 import { userWithRelationsSchema } from '../contracts/user.types';
 
@@ -45,6 +51,30 @@ export class AuthService extends BaseAPIService {
 		return this.post('/auth/signin.email/confirm', {
 			body: validatedData,
 			responseSchema: signInEmailConfirmResponseSchema
+		});
+	}
+
+	/**
+	 * Refresh access token using refresh token
+	 * Backend returns { token: string }
+	 */
+	async refreshToken(data: RefreshTokenRequest) {
+		const validatedData = refreshTokenRequestSchema.parse(data);
+		return this.post('/auth/refresh-token', {
+			body: validatedData,
+			responseSchema: refreshTokenResponseSchema
+		});
+	}
+
+	/**
+	 * Sign in to a specific workspace
+	 * Backend returns IAuthResponse with user, token, and refresh_token
+	 */
+	async signInWorkspace(data: SignInWorkspaceRequest) {
+		const validatedData = signInWorkspaceRequestSchema.parse(data);
+		return this.post('/auth/signin.workspace', {
+			body: validatedData,
+			responseSchema: authResponseSchema
 		});
 	}
 }

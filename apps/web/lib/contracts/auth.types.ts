@@ -75,6 +75,24 @@ export const signInEmailConfirmResponseSchema = z.object({
 	lastOrganizationId: z.string().nullish()
 });
 
+// Refresh token request
+export const refreshTokenRequestSchema = z.object({
+	refresh_token: z.string()
+});
+
+// Refresh token response
+export const refreshTokenResponseSchema = z.object({
+	token: z.string()
+});
+
+// Sign in workspace request
+export const signInWorkspaceRequestSchema = z.object({
+	email: z.string().email(),
+	token: z.string(),
+	lastOrganizationId: z.string().optional(),
+	lastTeamId: z.string().optional()
+});
+
 // Type exports
 export type AuthToken = z.infer<typeof authTokenSchema>;
 export type AuthResponse = z.infer<typeof authResponseSchema>;
@@ -84,3 +102,6 @@ export type SignInEmailResponse = z.infer<typeof signInEmailResponseSchema>;
 export type SignInPasscodeRequest = z.infer<typeof signInPasscodeRequestSchema>;
 export type WorkspaceResponse = z.infer<typeof workspaceResponseSchema>;
 export type SignInEmailConfirmResponse = z.infer<typeof signInEmailConfirmResponseSchema>;
+export type RefreshTokenRequest = z.infer<typeof refreshTokenRequestSchema>;
+export type RefreshTokenResponse = z.infer<typeof refreshTokenResponseSchema>;
+export type SignInWorkspaceRequest = z.infer<typeof signInWorkspaceRequestSchema>;
