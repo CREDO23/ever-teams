@@ -6,6 +6,12 @@ export interface BaseAPIConfig {
 	timeout?: number;
 }
 
+export interface RequestOptions<T = any> {
+	responseSchema?: z.ZodSchema<T>;
+	config?: AxiosRequestConfig;
+	body?: any;
+}
+
 export class BaseAPIService {
 	protected axios: AxiosInstance;
 
@@ -19,41 +25,23 @@ export class BaseAPIService {
 		});
 	}
 
-	protected async get<T>(
-		url: string,
-		config?: AxiosRequestConfig,
-		schema?: z.ZodSchema<T>
-	): Promise<T> {
-		const response = await this.axios.get<T>(url, config);
-		return schema ? schema.parse(response.data) : response.data;
+	protected async get<T>(url: string, options?: RequestOptions<T>): Promise<T> {
+		const response = await this.axios.get<T>(url, options?.config);
+		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
 	}
 
-	protected async post<T>(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig,
-		schema?: z.ZodSchema<T>
-	): Promise<T> {
-		const response = await this.axios.post<T>(url, data, config);
-		return schema ? schema.parse(response.data) : response.data;
+	protected async post<T>(url: string, options?: RequestOptions<T>): Promise<T> {
+		const response = await this.axios.post<T>(url, options?.body, options?.config);
+		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
 	}
 
-	protected async put<T>(
-		url: string,
-		data?: any,
-		config?: AxiosRequestConfig,
-		schema?: z.ZodSchema<T>
-	): Promise<T> {
-		const response = await this.axios.put<T>(url, data, config);
-		return schema ? schema.parse(response.data) : response.data;
+	protected async put<T>(url: string, options?: RequestOptions<T>): Promise<T> {
+		const response = await this.axios.put<T>(url, options?.body, options?.config);
+		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
 	}
 
-	protected async delete<T>(
-		url: string,
-		config?: AxiosRequestConfig,
-		schema?: z.ZodSchema<T>
-	): Promise<T> {
-		const response = await this.axios.delete<T>(url, config);
-		return schema ? schema.parse(response.data) : response.data;
+	protected async delete<T>(url: string, options?: RequestOptions<T>): Promise<T> {
+		const response = await this.axios.delete<T>(url, options?.config);
+		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
 	}
 }
