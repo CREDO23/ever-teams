@@ -14,3 +14,4 @@ export * from './social-account.types';
 export * from './tenant.types';
 export * from './currency.types';
 export * from './language.types';
+export * from './image-asset.types';
