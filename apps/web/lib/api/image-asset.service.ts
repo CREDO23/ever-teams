@@ -6,19 +6,21 @@ import {
 	uploadImageAssetRequestSchema,
 	updateImageAssetRequestSchema,
 	deleteImageAssetRequestSchema,
+	getImageAssetByIdRequestSchema,
+	getImageAssetsRequestSchema,
+	getImageAssetsCountRequestSchema,
+	createImageAssetMetadataRequestSchema,
 	imageAssetListResponseSchema,
 	type UploadImageAssetRequest,
 	type UpdateImageAssetRequest,
 	type DeleteImageAssetRequest,
-	type ImageAsset
+	type GetImageAssetByIdRequest,
+	type GetImageAssetsRequest,
+	type GetImageAssetsCountRequest,
+	type CreateImageAssetMetadataRequest
 } from '../contracts/image-asset.types';
 
 export class ImageAssetService extends BaseAPIService {
-	/**
-	 * Upload an image asset to a specific folder
-	 * POST /image-assets/upload/:folder
-	 * Returns: IImageAsset with name, url, thumb, size, storageProvider
-	 */
 	async uploadImage(request: UploadImageAssetRequest & { file: FormData }) {
 		const { folder, tenantId, organizationId, isFeatured, file } = request;
 		const validatedRequest = uploadImageAssetRequestSchema.parse({ folder, tenantId, organizationId, isFeatured });
@@ -34,68 +36,37 @@ export class ImageAssetService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Get image asset by ID
-	 * GET /image-assets/:id
-	 * Returns: IImageAsset with fullUrl and thumbUrl
-	 */
-	async getImageAsset(request: { id: string }) {
-		return this.get(`/image-assets/${request.id}`, {
+	async getImageAsset(request: GetImageAssetByIdRequest) {
+		const { id } = getImageAssetByIdRequestSchema.parse(request);
+		return this.get(`/image-assets/${id}`, {
 			responseSchema: imageAssetWithRelationsSchema
 		});
 	}
 
-	/**
-	 * Get all image assets with pagination
-	 * GET /image-assets
-	 * Returns: IPagination<IImageAsset>
-	 */
-	async getImageAssets(request?: { 
-		page?: number; 
-		limit?: number; 
-		organizationId?: string;
-		tenantId?: string;
-		isFeatured?: boolean;
-	}) {
+	async getImageAssets(request?: GetImageAssetsRequest) {
+		const params = request ? getImageAssetsRequestSchema.parse(request) : undefined;
 		return this.get('/image-assets', {
-			params: request,
+			params,
 			responseSchema: imageAssetListResponseSchema
 		});
 	}
 
-	/**
-	 * Get image assets count
-	 * GET /image-assets/count
-	 * Returns: number
-	 */
-	async getImageAssetsCount(request?: {
-		organizationId?: string;
-		tenantId?: string;
-		isFeatured?: boolean;
-	}) {
+	async getImageAssetsCount(request?: GetImageAssetsCountRequest) {
+		const params = request ? getImageAssetsCountRequestSchema.parse(request) : undefined;
 		return this.get('/image-assets/count', {
-			params: request,
+			params,
 			responseSchema: z.number()
 		});
 	}
 
-	/**
-	 * Create a new image asset (without file upload)
-	 * POST /image-assets
-	 * Returns: IImageAsset
-	 */
-	async createImageAsset(request: Partial<ImageAsset>) {
+	async createImageAsset(request: CreateImageAssetMetadataRequest) {
+		const validatedRequest = createImageAssetMetadataRequestSchema.parse(request);
 		return this.post('/image-assets', {
-			body: request,
+			body: validatedRequest,
 			responseSchema: imageAssetSchema
 		});
 	}
 
-	/**
-	 * Update image asset metadata (cannot update file)
-	 * PUT /image-assets/:id  
-	 * Note: Backend doesn't have PUT endpoint, only POST and DELETE
-	 */
 	async updateImageAsset(request: UpdateImageAssetRequest) {
 		const { id, ...data } = updateImageAssetRequestSchema.parse(request);
 		return this.put(`/image-assets/${id}`, {
@@ -104,11 +75,6 @@ export class ImageAssetService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Delete image asset and its files from storage
-	 * DELETE /image-assets/:id
-	 * Returns: success response or deleted object
-	 */
 	async deleteImageAsset(request: DeleteImageAssetRequest) {
 		const { id } = deleteImageAssetRequestSchema.parse(request);
 		return this.delete(`/image-assets/${id}`);

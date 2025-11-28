@@ -37,6 +37,38 @@ export const getImageAssetRequestSchema = z.object({
 	tenantId: z.string().optional(),
 });
 
+export const getImageAssetByIdRequestSchema = z.object({
+	id: z.string()
+});
+
+export const getImageAssetsRequestSchema = z.object({
+	page: z.number().optional(),
+	limit: z.number().optional(),
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional(),
+	isFeatured: z.boolean().optional()
+});
+
+export const getImageAssetsCountRequestSchema = z.object({
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional(),
+	isFeatured: z.boolean().optional()
+});
+
+export const createImageAssetMetadataRequestSchema = z.object({
+	name: z.string(),
+	url: z.string(),
+	thumb: z.string().optional(),
+	width: z.number().optional(),
+	height: z.number().optional(),
+	size: z.number().optional(),
+	isFeatured: z.boolean().optional(),
+	externalProviderId: z.string().optional(),
+	storageProvider: fileStorageProviderEnum.optional(),
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional()
+});
+
 export const createImageAssetRequestSchema = z.object({
 	organizationId: z.string(),
 	tenantId: z.string(),
@@ -80,6 +112,10 @@ export type FileStorageProvider = z.infer<typeof fileStorageProviderEnum>;
 export type ImageAsset = z.infer<typeof imageAssetSchema>;
 export type ImageAssetWithRelations = z.infer<typeof imageAssetWithRelationsSchema>;
 export type GetImageAssetRequest = z.infer<typeof getImageAssetRequestSchema>;
+export type GetImageAssetByIdRequest = z.infer<typeof getImageAssetByIdRequestSchema>;
+export type GetImageAssetsRequest = z.infer<typeof getImageAssetsRequestSchema>;
+export type GetImageAssetsCountRequest = z.infer<typeof getImageAssetsCountRequestSchema>;
+export type CreateImageAssetMetadataRequest = z.infer<typeof createImageAssetMetadataRequestSchema>;
 export type CreateImageAssetRequest = z.infer<typeof createImageAssetRequestSchema>;
 export type UploadImageAssetRequest = z.infer<typeof uploadImageAssetRequestSchema>;
 export type UpdateImageAssetRequest = z.infer<typeof updateImageAssetRequestSchema>;
