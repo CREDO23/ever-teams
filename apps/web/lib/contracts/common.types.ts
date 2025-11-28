@@ -1,50 +1,22 @@
 /**
  * Common Types and Schemas
- * 
- * Zod schemas are the single source of truth.
- * Types are inferred from schemas, no duplicate interfaces.
- * 
- * @module lib/contracts/common.types
  */
 
 import { z } from 'zod';
 
-// ============================================================================
-// ENUM SCHEMAS
-// ============================================================================
-
-/**
- * Supported languages enum schema
- */
 export const languagesEnumSchema = z.enum([
 	'en', 'bg', 'he', 'ru', 'fr', 'es', 'zh', 'de', 'pt', 'it', 'nl', 'pl', 'ar'
 ]);
 
-/**
- * Component layout styles enum schema
- */
 export const componentLayoutStyleEnumSchema = z.enum(['CARDS_GRID', 'TABLE']);
 
-/**
- * Time format enum schema
- */
 export const timeFormatEnumSchema = z.union([
 	z.literal(12),
 	z.literal(24)
 ]);
 
-/**
- * OAuth provider enum schema
- */
 export const providerEnumSchema = z.enum(['github', 'google', 'facebook', 'twitter']);
 
-// ============================================================================
-// BASE SCHEMAS
-// ============================================================================
-
-/**
- * Base tenant schema for tenant-related fields
- */
 export const baseTenantSchema = z.object({
 	tenant: z.object({
 		id: z.string()
@@ -52,9 +24,6 @@ export const baseTenantSchema = z.object({
 	tenant_id: z.string().optional()
 });
 
-/**
- * Base entity model schema with common fields for all entities
- */
 export const baseEntityModelSchema = z.object({
 	id: z.string().optional(),
 	createdAt: z.union([z.date(), z.string()]).optional(),
@@ -64,24 +33,15 @@ export const baseEntityModelSchema = z.object({
 	archivedAt: z.union([z.date(), z.string()]).optional()
 });
 
-/**
- * Base per-tenant entity model schema
- */
 export const basePerTenantEntityModelSchema = baseEntityModelSchema.merge(baseTenantSchema).extend({
 	tenantId: z.string().optional(),
 	organizationId: z.string().optional()
 });
 
-/**
- * Base relations model schema for including related entities
- */
 export const baseRelationsEntityModelSchema = z.object({
 	relations: z.array(z.string()).optional()
 });
 
-/**
- * Image asset schema for avatars and media
- */
 export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
 	url: z.string().url().optional(),
 	thumb: z.string().url().optional(),
@@ -92,9 +52,6 @@ export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
 	thumbUrl: z.string().url().optional()
 });
 
-/**
- * Relational image asset schema
- */
 export const relationalImageAssetSchema = z.object({
 	image: imageAssetSchema.optional(),
 	imageId: z.string().optional(),
@@ -102,32 +59,19 @@ export const relationalImageAssetSchema = z.object({
 	avatarUrl: z.string().url().optional()
 });
 
-/**
- * Soft delete schema
- */
 export const softDeleteSchema = z.object({
 	deletedAt: z.union([z.date(), z.string()]).nullable().optional()
 });
 
-/**
- * Timestamped schema
- */
 export const timestampedSchema = z.object({
 	createdAt: z.union([z.date(), z.string()]).optional(),
 	updatedAt: z.union([z.date(), z.string()]).optional()
 });
 
-/**
- * Entity with owner schema
- */
 export const entityWithOwnerSchema = z.object({
 	ownerId: z.string().optional(),
 	ownerType: z.string().optional()
 });
-
-// ============================================================================
-// INFERRED TYPES (Generated from schemas - Single source of truth)
-// ============================================================================
 
 // Basic types
 export type ID = string;

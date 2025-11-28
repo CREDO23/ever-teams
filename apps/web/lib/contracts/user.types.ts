@@ -1,12 +1,5 @@
 /**
  * User Types and Schemas
- * 
- * Structure:
- * - Database schemas (as stored in DB with foreign keys)
- * - Response schemas (with populated relations)
- * - Request schemas (for API endpoints)
- * 
- * @module lib/contracts/user.types
  */
 
 import { z } from 'zod';
@@ -18,18 +11,9 @@ import {
 	timeFormatEnumSchema
 } from './common.types';
 
-// ============================================================================
-// DATABASE SCHEMAS (as stored in DB with foreign key IDs)
-// ============================================================================
-
-/**
- * User database schema - represents the user table in database
- * Contains only foreign key IDs, not populated data
- */
 export const userSchema = basePerTenantEntityModelSchema
 	.merge(relationalImageAssetSchema)
 	.extend({
-		// Basic fields
 		thirdPartyId: z.string().nullable().optional(),
 		name: z.string().nullable().optional(),
 		firstName: z.string().nullable().optional(),
@@ -40,11 +24,9 @@ export const userSchema = basePerTenantEntityModelSchema
 		timeZone: z.string().nullable().optional(),
 		timeFormat: timeFormatEnumSchema.nullable().optional(),
 		
-		// Authentication fields
 		hash: z.string().nullable().optional(),
 		refreshToken: z.string().nullable().optional(),
 		
-		// Foreign keys (as stored in DB)
 		roleId: z.string().nullable().optional(),
 		employeeId: z.string().nullable().optional(),
 		defaultTeamId: z.string().nullable().optional(),
@@ -52,31 +34,23 @@ export const userSchema = basePerTenantEntityModelSchema
 		defaultOrganizationId: z.string().nullable().optional(),
 		lastOrganizationId: z.string().nullable().optional(),
 		
-		// Preferences
 		preferredLanguage: z.string().nullable().optional(),
 		preferredComponentLayout: componentLayoutStyleEnumSchema.nullable().optional(),
 		
-		// Computed/virtual fields
 		fullName: z.string().nullable().optional(),
 		
-		// Status fields
 		isImporting: z.boolean().default(false).optional(),
 		sourceId: z.string().nullable().optional(),
 		
-		// Email verification
 		code: z.string().nullable().optional(),
 		codeExpireAt: z.union([z.date(), z.string()]).nullable().optional(),
 		emailVerifiedAt: z.union([z.date(), z.string()]).nullable().optional(),
 		emailToken: z.string().nullable().optional(),
 		isEmailVerified: z.boolean().default(false).optional(),
 		
-		// Activity tracking
 		lastLoginAt: z.union([z.date(), z.string()]).nullable().optional()
 	});
 
-/**
- * User-Organization junction table schema
- */
 export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
 	organizationId: z.string(),
@@ -84,16 +58,7 @@ export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 	isActive: z.boolean().default(true).optional()
 });
 
-// ============================================================================
-// RESPONSE SCHEMAS (with populated relations for API responses)
-// ============================================================================
-
-/**
- * User with all relations populated - used in API responses
- * When the backend populates foreign keys with actual data
- */
 export const userWithRelationsSchema = userSchema.extend({
-	// Populated relations
 	role: z.lazy(() => {
 		const { roleSchema } = require('./role.types');
 		return roleSchema.nullable().optional();
@@ -135,9 +100,6 @@ export const userWithRelationsSchema = userSchema.extend({
 	})
 });
 
-/**
- * User-Organization with populated relations
- */
 export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
 	user: z.lazy(() => userSchema).nullable().optional(),
 	organization: z.lazy(() => {
@@ -146,14 +108,7 @@ export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend
 	})
 });
 
-// ============================================================================
-// REQUEST SCHEMAS (for API endpoints)
-// ============================================================================
-
 // Authentication Requests
-/**
- * Login request schema
- */
 export const loginRequestSchema = z.object({
 	email: z.string().email('Invalid email address'),
 	password: z.string().min(1, 'Password is required'),
@@ -161,9 +116,6 @@ export const loginRequestSchema = z.object({
 	includeTeams: z.boolean().optional()
 });
 
-/**
- * Register request schema
- */
 export const registerRequestSchema = z.object({
 	firstName: z.string().min(1, 'First name is required'),
 	lastName: z.string().min(1, 'Last name is required'),
@@ -183,16 +135,10 @@ export const registerRequestSchema = z.object({
 	}
 );
 
-/**
- * Forgot password request schema
- */
 export const forgotPasswordRequestSchema = z.object({
 	email: z.string().email('Invalid email address')
 });
 
-/**
- * Reset password request schema
- */
 export const resetPasswordRequestSchema = z.object({
 	token: z.string().min(1, 'Token is required'),
 	password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -205,9 +151,6 @@ export const resetPasswordRequestSchema = z.object({
 	}
 );
 
-/**
- * Change password request schema (for logged-in users)
- */
 export const changePasswordRequestSchema = z.object({
 	currentPassword: z.string().min(1, 'Current password is required'),
 	newPassword: z.string().min(8, 'Password must be at least 8 characters'),
@@ -220,18 +163,12 @@ export const changePasswordRequestSchema = z.object({
 	}
 );
 
-/**
- * Verify email request schema
- */
 export const verifyEmailRequestSchema = z.object({
 	token: z.string().min(1, 'Token is required'),
 	code: z.string().optional()
 });
 
 // User Management Requests
-/**
- * Get user request schema (query params)
- */
 export const getUserRequestSchema = z.object({
 	id: z.string().optional(),
 	email: z.string().email().optional(),
@@ -242,15 +179,10 @@ export const getUserRequestSchema = z.object({
 	relations: z.array(z.string()).optional() // ['employee', 'role', 'teams']
 });
 
-/**
- * Get users list request schema (query params)
- */
 export const getUsersRequestSchema = z.object({
-	// Pagination
 	page: z.number().min(1).optional(),
 	limit: z.number().min(1).max(100).optional(),
 	
-	// Filtering
 	search: z.string().optional(),
 	organizationId: z.string().optional(),
 	tenantId: z.string().optional(),
@@ -258,17 +190,12 @@ export const getUsersRequestSchema = z.object({
 	isActive: z.boolean().optional(),
 	isEmailVerified: z.boolean().optional(),
 	
-	// Sorting
 	sortBy: z.enum(['createdAt', 'email', 'firstName', 'lastName', 'lastLoginAt']).optional(),
 	sortOrder: z.enum(['ASC', 'DESC']).optional(),
 	
-	// Relations to include
 	relations: z.array(z.string()).optional()
 });
 
-/**
- * Create user request schema
- */
 export const createUserRequestSchema = z.object({
 	firstName: z.string().min(1),
 	lastName: z.string().min(1),
@@ -284,30 +211,17 @@ export const createUserRequestSchema = z.object({
 	preferredComponentLayout: componentLayoutStyleEnumSchema.optional()
 });
 
-/**
- * Update user request schema
- */
 export const updateUserRequestSchema = createUserRequestSchema.partial().extend({
 	id: z.string(),
 	isActive: z.boolean().optional(),
 	isEmailVerified: z.boolean().optional()
 });
 
-/**
- * Delete user request schema
- */
 export const deleteUserRequestSchema = z.object({
 	id: z.string(),
 	permanent: z.boolean().optional() // soft delete vs hard delete
 });
 
-// ============================================================================
-// RESPONSE SCHEMAS (for API responses)
-// ============================================================================
-
-/**
- * Auth response schema (login/register response)
- */
 export const authResponseSchema = z.object({
 	user: userWithRelationsSchema,
 	token: z.string(),
@@ -315,17 +229,11 @@ export const authResponseSchema = z.object({
 	expiresIn: z.number().optional()
 });
 
-/**
- * User response schema (single user)
- */
 export const userResponseSchema = z.object({
 	data: userWithRelationsSchema,
 	message: z.string().optional()
 });
 
-/**
- * Users list response schema
- */
 export const usersListResponseSchema = z.object({
 	data: z.array(userWithRelationsSchema),
 	total: z.number(),
@@ -334,9 +242,6 @@ export const usersListResponseSchema = z.object({
 	message: z.string().optional()
 });
 
-/**
- * User workspace response
- */
 export const workspaceResponseSchema = z.object({
 	token: z.string(),
 	user: userWithRelationsSchema,
@@ -347,9 +252,6 @@ export const workspaceResponseSchema = z.object({
 	})
 });
 
-/**
- * Sign-in workspaces response
- */
 export const userWorkspacesResponseSchema = z.object({
 	workspaces: z.array(workspaceResponseSchema),
 	confirmed_email: z.string(),
@@ -358,10 +260,6 @@ export const userWorkspacesResponseSchema = z.object({
 	defaultTeamId: z.string().optional(),
 	defaultOrganizationId: z.string().optional()
 });
-
-// ============================================================================
-// INFERRED TYPES (Generated from schemas)
-// ============================================================================
 
 // Database entity types
 export type User = z.infer<typeof userSchema>;

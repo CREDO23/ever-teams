@@ -1,22 +1,10 @@
 /**
  * Organization Types and Schemas
- * 
- * Zod schemas are the single source of truth.
- * Types are inferred from schemas, no duplicate interfaces.
- * 
- * @module lib/contracts/organization.types
  */
 
 import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
 
-// ============================================================================
-// DATABASE SCHEMAS
-// ============================================================================
-
-/**
- * Organization database schema - represents the organization table in DB
- */
 export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Organization name is required'),
 	isDefault: z.boolean().nullable().optional(),
@@ -34,21 +22,12 @@ export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	website: z.string().nullable().optional(),
 	contact: z.string().nullable().optional(),
 	
-	// Foreign keys (IDs only)
 	ownerId: z.string().nullable().optional(),
 	contactId: z.string().nullable().optional(),
 	imageId: z.string().nullable().optional()
 });
 
-// ============================================================================
-// WITH RELATIONS SCHEMAS
-// ============================================================================
-
-/**
- * Organization with populated relations - for API responses
- */
 export const organizationWithRelationsSchema = organizationSchema.extend({
-	// Populated relations
 	owner: z.lazy(() => require('./user.types').userSchema).nullable().optional(),
 	employees: z.array(z.lazy(() => require('./employee.types').employeeSchema)).optional(),
 	teams: z.array(z.lazy(() => require('./team.types').teamSchema)).optional(),
@@ -56,21 +35,11 @@ export const organizationWithRelationsSchema = organizationSchema.extend({
 	invites: z.array(z.lazy(() => require('./invite.types').inviteSchema)).optional()
 });
 
-// ============================================================================
-// REQUEST SCHEMAS
-// ============================================================================
-
-/**
- * Get organization request schema
- */
 export const getOrganizationRequestSchema = z.object({
 	id: z.string().uuid(),
 	relations: z.array(z.string()).optional() // ['owner', 'employees', 'teams']
 });
 
-/**
- * Get organizations list request schema
- */
 export const getOrganizationsRequestSchema = z.object({
 	relations: z.array(z.string()).optional(),
 	take: z.number().min(1).max(100).optional(),
@@ -81,9 +50,6 @@ export const getOrganizationsRequestSchema = z.object({
 	}).optional()
 });
 
-/**
- * Create organization request schema
- */
 export const createOrganizationRequestSchema = z.object({
 	name: z.string().min(1, 'Organization name is required'),
 	currency: z.string().length(3).optional(),
@@ -98,43 +64,24 @@ export const createOrganizationRequestSchema = z.object({
 	banner: z.string().url().optional()
 });
 
-/**
- * Update organization request schema
- */
 export const updateOrganizationRequestSchema = createOrganizationRequestSchema.partial().extend({
 	id: z.string().uuid()
 });
 
-/**
- * Delete organization request schema
- */
 export const deleteOrganizationRequestSchema = z.object({
 	id: z.string().uuid()
 });
 
-/**
- * Set default organization request
- */
 export const setDefaultOrganizationRequestSchema = z.object({
 	organizationId: z.string().uuid()
 });
 
-// ============================================================================
-// RESPONSE SCHEMAS
-// ============================================================================
-
-/**
- * Single organization response
- */
 export const organizationResponseSchema = z.object({
 	data: organizationWithRelationsSchema,
 	message: z.string().optional(),
 	success: z.boolean()
 });
 
-/**
- * Organizations list response
- */
 export const organizationsListResponseSchema = z.object({
 	data: z.array(organizationWithRelationsSchema),
 	total: z.number(),
@@ -144,35 +91,22 @@ export const organizationsListResponseSchema = z.object({
 	success: z.boolean()
 });
 
-/**
- * Organization creation response
- */
 export const createOrganizationResponseSchema = z.object({
 	data: organizationSchema,
 	message: z.string().optional(),
 	success: z.boolean()
 });
 
-/**
- * Organization update response
- */
 export const updateOrganizationResponseSchema = z.object({
 	data: organizationSchema,
 	message: z.string().optional(),
 	success: z.boolean()
 });
 
-/**
- * Organization deletion response
- */
 export const deleteOrganizationResponseSchema = z.object({
 	message: z.string(),
 	success: z.boolean()
 });
-
-// ============================================================================
-// INFERRED TYPES (Generated from schemas - Single source of truth)
-// ============================================================================
 
 export type Organization = z.infer<typeof organizationSchema>;
 export type OrganizationWithRelations = z.infer<typeof organizationWithRelationsSchema>;
