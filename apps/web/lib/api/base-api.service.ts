@@ -35,6 +35,10 @@ export class BaseAPIService {
 					config.headers.Authorization = `Bearer ${token}`;
 				}
 			}
+			// If body is FormData, let browser set Content-Type with boundary
+			if (config.data instanceof FormData) {
+				delete config.headers['Content-Type'];
+			}
 			return config;
 		});
 	}

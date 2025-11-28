@@ -45,7 +45,13 @@ export const createImageAssetRequestSchema = z.object({
 	isFeatured: z.boolean().optional(),
 });
 
+export const uploadImageAssetRequestSchema = z.object({
+	folder: z.string(),
+	tenantId: z.string().optional(),
+});
+
 export const updateImageAssetRequestSchema = z.object({
+	id: z.string(),
 	name: z.string().optional(),
 	isFeatured: z.boolean().optional(),
 });
@@ -73,6 +79,7 @@ export type ImageAsset = z.infer<typeof imageAssetSchema>;
 export type ImageAssetWithRelations = z.infer<typeof imageAssetWithRelationsSchema>;
 export type GetImageAssetRequest = z.infer<typeof getImageAssetRequestSchema>;
 export type CreateImageAssetRequest = z.infer<typeof createImageAssetRequestSchema>;
+export type UploadImageAssetRequest = z.infer<typeof uploadImageAssetRequestSchema>;
 export type UpdateImageAssetRequest = z.infer<typeof updateImageAssetRequestSchema>;
 export type DeleteImageAssetRequest = z.infer<typeof deleteImageAssetRequestSchema>;
 export type ImageAssetResponse = z.infer<typeof imageAssetResponseSchema>;
