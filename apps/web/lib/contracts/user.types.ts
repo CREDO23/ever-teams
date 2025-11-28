@@ -1,8 +1,10 @@
 /**
  * User Types and Schemas
  * 
- * Zod schemas are the single source of truth.
- * Types are inferred from schemas, no duplicate interfaces.
+ * Structure:
+ * - Database schemas (as stored in DB with foreign keys)
+ * - Response schemas (with populated relations)
+ * - Request schemas (for API endpoints)
  * 
  * @module lib/contracts/user.types
  */
@@ -17,239 +19,104 @@ import {
 } from './common.types';
 
 // ============================================================================
-// BASE SCHEMAS (without relations to avoid circular deps)
+// DATABASE SCHEMAS (as stored in DB with foreign key IDs)
 // ============================================================================
 
 /**
- * Base user schema - Single source of truth for user entity
+ * User database schema - represents the user table in database
+ * Contains only foreign key IDs, not populated data
  */
-export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAssetSchema)
+export const userSchema = basePerTenantEntityModelSchema
+	.merge(relationalImageAssetSchema)
 	.extend({
-		thirdPartyId: z.string().optional(),
-		name: z.string().optional(),
-		firstName: z.string().optional(),
-		lastName: z.string().optional(),
-		email: z.string().email().optional(),
-		phoneNumber: z.string().optional(),
-		username: z.string().optional(),
-		timeZone: z.string().optional(),
-		timeFormat: timeFormatEnumSchema.optional(),
-		roleId: z.string().optional(),
-		hash: z.string().optional(),
-		refreshToken: z.string().optional(),
-		employeeId: z.string().optional(),
-		defaultTeamId: z.string().optional(),
-		lastTeamId: z.string().optional(),
-		defaultOrganizationId: z.string().optional(),
-		lastOrganizationId: z.string().optional(),
-		preferredLanguage: z.string().optional(),
-		preferredComponentLayout: componentLayoutStyleEnumSchema.optional(),
-		fullName: z.string().optional(),
-		isImporting: z.boolean().optional(),
-		sourceId: z.string().optional(),
-		code: z.string().optional(),
-		codeExpireAt: z.union([z.date(), z.string()]).optional(),
-		emailVerifiedAt: z.union([z.date(), z.string()]).optional(),
-		lastLoginAt: z.union([z.date(), z.string()]).optional(),
-		isEmailVerified: z.boolean().optional(),
-		emailToken: z.string().optional()
+		// Basic fields
+		thirdPartyId: z.string().nullable().optional(),
+		name: z.string().nullable().optional(),
+		firstName: z.string().nullable().optional(),
+		lastName: z.string().nullable().optional(),
+		email: z.string().email().nullable().optional(),
+		phoneNumber: z.string().nullable().optional(),
+		username: z.string().nullable().optional(),
+		timeZone: z.string().nullable().optional(),
+		timeFormat: timeFormatEnumSchema.nullable().optional(),
+		
+		// Authentication fields
+		hash: z.string().nullable().optional(),
+		refreshToken: z.string().nullable().optional(),
+		
+		// Foreign keys (as stored in DB)
+		roleId: z.string().nullable().optional(),
+		employeeId: z.string().nullable().optional(),
+		defaultTeamId: z.string().nullable().optional(),
+		lastTeamId: z.string().nullable().optional(),
+		defaultOrganizationId: z.string().nullable().optional(),
+		lastOrganizationId: z.string().nullable().optional(),
+		
+		// Preferences
+		preferredLanguage: z.string().nullable().optional(),
+		preferredComponentLayout: componentLayoutStyleEnumSchema.nullable().optional(),
+		
+		// Computed/virtual fields
+		fullName: z.string().nullable().optional(),
+		
+		// Status fields
+		isImporting: z.boolean().default(false).optional(),
+		sourceId: z.string().nullable().optional(),
+		
+		// Email verification
+		code: z.string().nullable().optional(),
+		codeExpireAt: z.union([z.date(), z.string()]).nullable().optional(),
+		emailVerifiedAt: z.union([z.date(), z.string()]).nullable().optional(),
+		emailToken: z.string().nullable().optional(),
+		isEmailVerified: z.boolean().default(false).optional(),
+		
+		// Activity tracking
+		lastLoginAt: z.union([z.date(), z.string()]).nullable().optional()
 	});
 
 /**
- * User-Organization relationship schema
+ * User-Organization junction table schema
  */
 export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
 	organizationId: z.string(),
-	isDefault: z.boolean().optional(),
-	isActive: z.boolean().optional()
-});
-
-/**
- * Relational user schema
- */
-export const relationalUserSchema = z.object({
-	userId: z.string().optional()
-});
-
-/**
- * User view model schema for display purposes
- */
-export const userViewModelSchema = basePerTenantEntityModelSchema.extend({
-	fullName: z.string(),
-	email: z.string().email(),
-	employeeId: z.string().optional(),
-	bonus: z.number().optional(),
-	endWork: z.any().optional(),
-	id: z.string(),
-	roleName: z.string().optional(),
-	role: z.string().optional(),
-	userOrganizationId: z.string().optional()
-});
-
-/**
- * User statistics schema
- */
-export const userStatsSchema = z.object({
-	count: z.number(),
-	lastMonthActiveUsers: z.number()
+	isDefault: z.boolean().default(false).optional(),
+	isActive: z.boolean().default(true).optional()
 });
 
 // ============================================================================
-// INPUT SCHEMAS
+// RESPONSE SCHEMAS (with populated relations for API responses)
 // ============================================================================
 
 /**
- * User find input schema
- */
-export const userFindInputSchema = basePerTenantEntityModelSchema.extend({
-	thirdPartyId: z.string().optional(),
-	email: z.string().email().optional()
-});
-
-/**
- * User email input schema
- */
-export const userEmailInputSchema = z.object({
-	email: z.string().email('Invalid email address')
-});
-
-/**
- * User password input schema
- */
-export const userPasswordInputSchema = z.object({
-	password: z.string().min(8, 'Password must be at least 8 characters')
-});
-
-/**
- * User login input schema
- */
-export const userLoginInputSchema = userEmailInputSchema.merge(userPasswordInputSchema);
-
-/**
- * User token input schema
- */
-export const userTokenInputSchema = z.object({
-	token: z.string()
-});
-
-/**
- * User create input schema
- */
-export const userCreateInputSchema = relationalImageAssetSchema.extend({
-	firstName: z.string().optional(),
-	lastName: z.string().optional(),
-	email: z.string().email().optional(),
-	phoneNumber: z.string().optional(),
-	username: z.string().optional(),
-	roleId: z.string().optional(),
-	hash: z.string().optional(),
-	preferredLanguage: languagesEnumSchema.optional(),
-	preferredComponentLayout: componentLayoutStyleEnumSchema.optional(),
-	timeZone: z.string().optional(),
-	timeFormat: timeFormatEnumSchema.optional(),
-	defaultTeamId: z.string().optional(),
-	lastTeamId: z.string().optional(),
-	defaultOrganizationId: z.string().optional(),
-	lastOrganizationId: z.string().optional()
-});
-
-/**
- * User update input schema
- */
-export const userUpdateInputSchema = userCreateInputSchema.extend({
-	id: z.string().optional()
-});
-
-/**
- * User registration input schema
- */
-export const userRegistrationInputSchema = z.object({
-	user: userSchema,
-	password: z.string().min(8).optional(),
-	confirmPassword: z.string().min(8).optional(),
-	originalUrl: z.string().optional(),
-	organizationId: z.string().optional(),
-	createdByUserId: z.string().optional(),
-	isImporting: z.boolean().optional(),
-	sourceId: z.string().optional(),
-	inviteId: z.string().optional(),
-	featureAsEmployee: z.boolean().optional()
-}).refine(
-	(data) => !data.password || data.password === data.confirmPassword,
-	{
-		message: "Passwords don't match",
-		path: ['confirmPassword']
-	}
-);
-
-// ============================================================================
-// RESPONSE SCHEMAS
-// ============================================================================
-
-/**
- * Auth response schema
- */
-export const authResponseSchema = z.object({
-	user: userSchema,
-	token: z.string(),
-	refresh_token: z.string().optional()
-});
-
-/**
- * Workspace response schema
- */
-export const workspaceResponseSchema = z.object({
-	token: z.string(),
-	user: userSchema
-});
-
-/**
- * Sign-in workspace response schema
- */
-export const userSigninWorkspaceResponseSchema = z.object({
-	workspaces: z.array(workspaceResponseSchema),
-	confirmed_email: z.string(),
-	show_popup: z.boolean().optional(),
-	total_workspaces: z.number().optional(),
-	defaultTeamId: z.string().optional(),
-	defaultOrganizationId: z.string().optional(),
-	lastTeamId: z.string().optional(),
-	lastOrganizationId: z.string().optional()
-});
-
-// ============================================================================
-// SCHEMAS WITH RELATIONS (use carefully to avoid circular deps)
-// ============================================================================
-
-/**
- * User schema with all relations
- * Use this only when you need the full related data
+ * User with all relations populated - used in API responses
+ * When the backend populates foreign keys with actual data
  */
 export const userWithRelationsSchema = userSchema.extend({
+	// Populated relations
 	role: z.lazy(() => {
 		const { roleSchema } = require('./role.types');
-		return roleSchema.optional();
+		return roleSchema.nullable().optional();
 	}),
 	employee: z.lazy(() => {
 		const { employeeSchema } = require('./employee.types');
-		return employeeSchema.optional();
+		return employeeSchema.nullable().optional();
 	}),
 	defaultTeam: z.lazy(() => {
 		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.optional();
+		return organizationTeamSchema.nullable().optional();
 	}),
 	lastTeam: z.lazy(() => {
 		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.optional();
+		return organizationTeamSchema.nullable().optional();
 	}),
 	defaultOrganization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
+		return organizationSchema.nullable().optional();
 	}),
 	lastOrganization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
+		return organizationSchema.nullable().optional();
 	}),
 	tags: z.lazy(() => {
 		const { tagSchema } = require('./tag.types');
@@ -269,60 +136,257 @@ export const userWithRelationsSchema = userSchema.extend({
 });
 
 /**
- * User view model with relations schema
- */
-export const userViewModelWithRelationsSchema = userViewModelSchema.extend({
-	tags: z.lazy(() => {
-		const { tagSchema } = require('./tag.types');
-		return z.array(tagSchema).optional();
-	})
-});
-
-/**
- * User-organization schema with relations
+ * User-Organization with populated relations
  */
 export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
-	user: z.lazy(() => userSchema).optional(),
+	user: z.lazy(() => userSchema).nullable().optional(),
 	organization: z.lazy(() => {
 		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
+		return organizationSchema.nullable().optional();
+	})
+});
+
+// ============================================================================
+// REQUEST SCHEMAS (for API endpoints)
+// ============================================================================
+
+// Authentication Requests
+/**
+ * Login request schema
+ */
+export const loginRequestSchema = z.object({
+	email: z.string().email('Invalid email address'),
+	password: z.string().min(1, 'Password is required'),
+	rememberMe: z.boolean().optional(),
+	includeTeams: z.boolean().optional()
+});
+
+/**
+ * Register request schema
+ */
+export const registerRequestSchema = z.object({
+	firstName: z.string().min(1, 'First name is required'),
+	lastName: z.string().min(1, 'Last name is required'),
+	email: z.string().email('Invalid email address'),
+	password: z.string().min(8, 'Password must be at least 8 characters'),
+	confirmPassword: z.string(),
+	agreeToTerms: z.boolean().optional(),
+	recaptcha: z.string().optional(),
+	inviteCode: z.string().optional(),
+	organizationId: z.string().optional(),
+	featureAsEmployee: z.boolean().optional()
+}).refine(
+	(data) => data.password === data.confirmPassword,
+	{
+		message: "Passwords don't match",
+		path: ['confirmPassword']
+	}
+);
+
+/**
+ * Forgot password request schema
+ */
+export const forgotPasswordRequestSchema = z.object({
+	email: z.string().email('Invalid email address')
+});
+
+/**
+ * Reset password request schema
+ */
+export const resetPasswordRequestSchema = z.object({
+	token: z.string().min(1, 'Token is required'),
+	password: z.string().min(8, 'Password must be at least 8 characters'),
+	confirmPassword: z.string()
+}).refine(
+	(data) => data.password === data.confirmPassword,
+	{
+		message: "Passwords don't match",
+		path: ['confirmPassword']
+	}
+);
+
+/**
+ * Change password request schema (for logged-in users)
+ */
+export const changePasswordRequestSchema = z.object({
+	currentPassword: z.string().min(1, 'Current password is required'),
+	newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+	confirmPassword: z.string()
+}).refine(
+	(data) => data.newPassword === data.confirmPassword,
+	{
+		message: "Passwords don't match",
+		path: ['confirmPassword']
+	}
+);
+
+/**
+ * Verify email request schema
+ */
+export const verifyEmailRequestSchema = z.object({
+	token: z.string().min(1, 'Token is required'),
+	code: z.string().optional()
+});
+
+// User Management Requests
+/**
+ * Get user request schema (query params)
+ */
+export const getUserRequestSchema = z.object({
+	id: z.string().optional(),
+	email: z.string().email().optional(),
+	includeEmployee: z.boolean().optional(),
+	includeRole: z.boolean().optional(),
+	includeOrganization: z.boolean().optional(),
+	includeTeams: z.boolean().optional(),
+	relations: z.array(z.string()).optional() // ['employee', 'role', 'teams']
+});
+
+/**
+ * Get users list request schema (query params)
+ */
+export const getUsersRequestSchema = z.object({
+	// Pagination
+	page: z.number().min(1).optional(),
+	limit: z.number().min(1).max(100).optional(),
+	
+	// Filtering
+	search: z.string().optional(),
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional(),
+	roleId: z.string().optional(),
+	isActive: z.boolean().optional(),
+	isEmailVerified: z.boolean().optional(),
+	
+	// Sorting
+	sortBy: z.enum(['createdAt', 'email', 'firstName', 'lastName', 'lastLoginAt']).optional(),
+	sortOrder: z.enum(['ASC', 'DESC']).optional(),
+	
+	// Relations to include
+	relations: z.array(z.string()).optional()
+});
+
+/**
+ * Create user request schema
+ */
+export const createUserRequestSchema = z.object({
+	firstName: z.string().min(1),
+	lastName: z.string().min(1),
+	email: z.string().email(),
+	username: z.string().optional(),
+	password: z.string().min(8).optional(),
+	roleId: z.string().optional(),
+	organizationId: z.string().optional(),
+	startedWorkOn: z.string().optional(),
+	tags: z.array(z.string()).optional(),
+	featureAsEmployee: z.boolean().optional(),
+	preferredLanguage: languagesEnumSchema.optional(),
+	preferredComponentLayout: componentLayoutStyleEnumSchema.optional()
+});
+
+/**
+ * Update user request schema
+ */
+export const updateUserRequestSchema = createUserRequestSchema.partial().extend({
+	id: z.string(),
+	isActive: z.boolean().optional(),
+	isEmailVerified: z.boolean().optional()
+});
+
+/**
+ * Delete user request schema
+ */
+export const deleteUserRequestSchema = z.object({
+	id: z.string(),
+	permanent: z.boolean().optional() // soft delete vs hard delete
+});
+
+// ============================================================================
+// RESPONSE SCHEMAS (for API responses)
+// ============================================================================
+
+/**
+ * Auth response schema (login/register response)
+ */
+export const authResponseSchema = z.object({
+	user: userWithRelationsSchema,
+	token: z.string(),
+	refresh_token: z.string().optional(),
+	expiresIn: z.number().optional()
+});
+
+/**
+ * User response schema (single user)
+ */
+export const userResponseSchema = z.object({
+	data: userWithRelationsSchema,
+	message: z.string().optional()
+});
+
+/**
+ * Users list response schema
+ */
+export const usersListResponseSchema = z.object({
+	data: z.array(userWithRelationsSchema),
+	total: z.number(),
+	page: z.number().optional(),
+	limit: z.number().optional(),
+	message: z.string().optional()
+});
+
+/**
+ * User workspace response
+ */
+export const workspaceResponseSchema = z.object({
+	token: z.string(),
+	user: userWithRelationsSchema,
+	workspace: z.object({
+		id: z.string(),
+		name: z.string(),
+		logo: z.string().optional()
 	})
 });
 
 /**
- * Relational user schema with full user object
+ * Sign-in workspaces response
  */
-export const relationalUserWithRelationsSchema = z.object({
-	user: z.lazy(() => userWithRelationsSchema).optional(),
-	userId: z.string().optional()
+export const userWorkspacesResponseSchema = z.object({
+	workspaces: z.array(workspaceResponseSchema),
+	confirmed_email: z.string(),
+	show_popup: z.boolean().optional(),
+	total_workspaces: z.number(),
+	defaultTeamId: z.string().optional(),
+	defaultOrganizationId: z.string().optional()
 });
 
 // ============================================================================
-// INFERRED TYPES (Generated from schemas - Single source of truth)
+// INFERRED TYPES (Generated from schemas)
 // ============================================================================
 
-// Entity types
+// Database entity types
 export type User = z.infer<typeof userSchema>;
-export type UserWithRelations = z.infer<typeof userWithRelationsSchema>;
 export type UserOrganization = z.infer<typeof userOrganizationSchema>;
-export type UserOrganizationWithRelations = z.infer<typeof userOrganizationWithRelationsSchema>;
-export type RelationalUser = z.infer<typeof relationalUserSchema>;
-export type RelationalUserWithRelations = z.infer<typeof relationalUserWithRelationsSchema>;
-export type UserViewModel = z.infer<typeof userViewModelSchema>;
-export type UserViewModelWithRelations = z.infer<typeof userViewModelWithRelationsSchema>;
-export type UserStats = z.infer<typeof userStatsSchema>;
 
-// Input types
-export type UserFindInput = z.infer<typeof userFindInputSchema>;
-export type UserEmailInput = z.infer<typeof userEmailInputSchema>;
-export type UserPasswordInput = z.infer<typeof userPasswordInputSchema>;
-export type UserLoginInput = z.infer<typeof userLoginInputSchema>;
-export type UserTokenInput = z.infer<typeof userTokenInputSchema>;
-export type UserCreateInput = z.infer<typeof userCreateInputSchema>;
-export type UserUpdateInput = z.infer<typeof userUpdateInputSchema>;
-export type UserRegistrationInput = z.infer<typeof userRegistrationInputSchema>;
+// Response types (with relations)
+export type UserWithRelations = z.infer<typeof userWithRelationsSchema>;
+export type UserOrganizationWithRelations = z.infer<typeof userOrganizationWithRelationsSchema>;
+
+// Request types
+export type LoginRequest = z.infer<typeof loginRequestSchema>;
+export type RegisterRequest = z.infer<typeof registerRequestSchema>;
+export type ForgotPasswordRequest = z.infer<typeof forgotPasswordRequestSchema>;
+export type ResetPasswordRequest = z.infer<typeof resetPasswordRequestSchema>;
+export type ChangePasswordRequest = z.infer<typeof changePasswordRequestSchema>;
+export type VerifyEmailRequest = z.infer<typeof verifyEmailRequestSchema>;
+export type GetUserRequest = z.infer<typeof getUserRequestSchema>;
+export type GetUsersRequest = z.infer<typeof getUsersRequestSchema>;
+export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
+export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
+export type DeleteUserRequest = z.infer<typeof deleteUserRequestSchema>;
 
 // Response types
 export type AuthResponse = z.infer<typeof authResponseSchema>;
+export type UserResponse = z.infer<typeof userResponseSchema>;
+export type UsersListResponse = z.infer<typeof usersListResponseSchema>;
 export type WorkspaceResponse = z.infer<typeof workspaceResponseSchema>;
-export type UserSigninWorkspaceResponse = z.infer<typeof userSigninWorkspaceResponseSchema>;
+export type UserWorkspacesResponse = z.infer<typeof userWorkspacesResponseSchema>;

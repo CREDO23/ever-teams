@@ -32,12 +32,12 @@ export * from './social-account.types';
  * 
  * @example
  * // Import specific types from individual modules
- * import { IUser, userSchema } from '@/lib/contracts/user.types';
- * import { IRole } from '@/lib/contracts/role.types';
+ * import { User, userSchema } from '@/lib/contracts/user.types';
+ * import { Role, roleSchema } from '@/lib/contracts/role.types';
  * 
  * @example
  * // Or import from the barrel export
- * import { IUser, IRole, ITeam, userSchema } from '@/lib/contracts';
+ * import { User, Role, Team, userSchema } from '@/lib/contracts';
  * 
  * @example
  * // Validate user data
@@ -46,13 +46,13 @@ export * from './social-account.types';
  * 
  * @example
  * // Use in API responses
- * import { TAuthResponse } from '@/lib/contracts';
- * const response: TAuthResponse = await api.login(credentials);
+ * import { LoginResponse } from '@/lib/contracts';
+ * const response: LoginResponse = await api.login(credentials);
  * 
  * @example
  * // Use common types
- * import { ID, IBasePerTenantEntityModel } from '@/lib/contracts';
- * interface MyEntity extends IBasePerTenantEntityModel {
+ * import { BasePerTenantEntityModel } from '@/lib/contracts';
+ * interface MyEntity extends BasePerTenantEntityModel {
  *   myField: string;
  * }
  */
