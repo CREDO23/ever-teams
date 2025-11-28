@@ -1,65 +1,21 @@
 /**
  * Employee Types and Schemas
  * 
- * Type definitions and schemas for employee entities.
- * Base schemas do not include relations to avoid circular dependencies.
- * Use WithRelations schemas when you need the full related data.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/employee.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from './common.types';
-import type { IUser } from './user.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Employee interface
- */
-export interface IEmployee extends IBasePerTenantEntityModel {
-	userId: ID;
-	user?: IUser;
-	employeeLevel?: string;
-	short_description?: string;
-	description?: string;
-	startedWorkOn?: Date | string;
-	endWork?: Date | string;
-	payPeriod?: string;
-	billRateValue?: number;
-	billRateCurrency?: string;
-	minimumBillingRate?: number;
-	show_anonymous_bonus?: boolean;
-	show_average_bonus?: boolean;
-	show_average_expenses?: boolean;
-	show_average_income?: boolean;
-	show_billrate?: boolean;
-	show_payperiod?: boolean;
-	show_start_work_on?: boolean;
-	isJobSearchActive?: boolean;
-	isOnline?: boolean;
-	isAway?: boolean;
-	isTrackingTime?: boolean;
-	totalWorkHours?: number;
-	availableHours?: number;
-}
-
-/**
- * Relational employee interface
- */
-export interface IRelationalEmployee {
-	employee?: IEmployee;
-	employeeId?: ID;
-}
-
-// ============================================================================
-// BASE ZOD SCHEMAS (without relations to avoid circular deps)
+// BASE SCHEMAS (without relations to avoid circular deps)
 // ============================================================================
 
 /**
- * Base employee schema without relations
+ * Base employee schema - Single source of truth for employee entity
  */
 export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string().min(1, 'User ID is required'),
@@ -88,7 +44,7 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 });
 
 /**
- * Base relational employee schema without relations
+ * Relational employee schema
  */
 export const relationalEmployeeSchema = z.object({
 	employeeId: z.string().optional()
@@ -100,7 +56,7 @@ export const relationalEmployeeSchema = z.object({
 
 /**
  * Employee schema with all relations
- * Use this only when you need the full related data and are sure there's no circular dependency
+ * Use this only when you need the full related data
  */
 export const employeeWithRelationsSchema = employeeSchema.extend({
 	user: z.lazy(() => {
@@ -118,10 +74,10 @@ export const relationalEmployeeWithRelationsSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TEmployee = z.infer<typeof employeeSchema>;
-export type TEmployeeWithRelations = z.infer<typeof employeeWithRelationsSchema>;
-export type TRelationalEmployee = z.infer<typeof relationalEmployeeSchema>;
-export type TRelationalEmployeeWithRelations = z.infer<typeof relationalEmployeeWithRelationsSchema>;
+export type Employee = z.infer<typeof employeeSchema>;
+export type EmployeeWithRelations = z.infer<typeof employeeWithRelationsSchema>;
+export type RelationalEmployee = z.infer<typeof relationalEmployeeSchema>;
+export type RelationalEmployeeWithRelations = z.infer<typeof relationalEmployeeWithRelationsSchema>;

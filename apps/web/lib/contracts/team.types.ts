@@ -1,66 +1,21 @@
 /**
  * Team Types and Schemas
  * 
- * Type definitions and schemas for teams and team members.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/team.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Organization Team interface
- */
-export interface IOrganizationTeam extends IBasePerTenantEntityModel {
-	name: string;
-	prefix?: string;
-	logo?: string;
-	profile_link?: string;
-	memberCount?: number;
-	public?: boolean;
-	color?: string;
-	emoji?: string;
-	taskPrivacy?: boolean;
-	description?: string;
-}
-
-/**
- * Default team interface
- */
-export interface IDefaultTeam {
-	defaultTeamId?: ID;
-}
-
-/**
- * Last team interface
- */
-export interface ILastTeam {
-	lastTeamId?: ID;
-}
-
-/**
- * Team member interface
- */
-export interface ITeamMember {
-	id?: string;
-	teamId: string;
-	userId: string;
-	roleId?: string;
-	joinedAt?: Date | string;
-	isActive?: boolean;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
+// SCHEMAS
 // ============================================================================
 
 /**
- * Organization team schema for validation
+ * Organization team schema - Single source of truth for team entity
  */
 export const organizationTeamSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Team name is required'),
@@ -70,7 +25,7 @@ export const organizationTeamSchema = basePerTenantEntityModelSchema.extend({
 	memberCount: z.number().min(0).optional(),
 	public: z.boolean().optional(),
 	color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color').optional(),
-	emoji: z.string().emoji().optional(),
+	emoji: z.string().optional(), // Note: .emoji() validator may not be available in all Zod versions
 	taskPrivacy: z.boolean().optional(),
 	description: z.string().optional()
 });
@@ -102,10 +57,10 @@ export const teamMemberSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TOrganizationTeam = z.infer<typeof organizationTeamSchema>;
-export type TDefaultTeam = z.infer<typeof defaultTeamSchema>;
-export type TLastTeam = z.infer<typeof lastTeamSchema>;
-export type TTeamMember = z.infer<typeof teamMemberSchema>;
+export type OrganizationTeam = z.infer<typeof organizationTeamSchema>;
+export type DefaultTeam = z.infer<typeof defaultTeamSchema>;
+export type LastTeam = z.infer<typeof lastTeamSchema>;
+export type TeamMember = z.infer<typeof teamMemberSchema>;

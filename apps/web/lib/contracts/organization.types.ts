@@ -1,59 +1,21 @@
 /**
  * Organization Types and Schemas
  * 
- * Type definitions and schemas for organizations.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/organization.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Organization interface
- */
-export interface IOrganization extends IBasePerTenantEntityModel {
-	name: string;
-	isDefault?: boolean;
-	profile_link?: string;
-	banner?: string;
-	totalEmployees?: number;
-	short_description?: string;
-	client_focus?: string;
-	overview?: string;
-	imageUrl?: string;
-	currency?: string;
-	timeZone?: string;
-	defaultValueDateType?: string;
-	regionCode?: string;
-	website?: string;
-	contact?: string;
-}
-
-/**
- * Default organization interface
- */
-export interface IDefaultOrganization {
-	defaultOrganizationId?: ID;
-}
-
-/**
- * Last organization interface
- */
-export interface ILastOrganization {
-	lastOrganizationId?: ID;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
+// SCHEMAS
 // ============================================================================
 
 /**
- * Organization schema for validation
+ * Organization schema - Single source of truth for organization entity
  */
 export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Organization name is required'),
@@ -88,9 +50,9 @@ export const lastOrganizationSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TOrganization = z.infer<typeof organizationSchema>;
-export type TDefaultOrganization = z.infer<typeof defaultOrganizationSchema>;
-export type TLastOrganization = z.infer<typeof lastOrganizationSchema>;
+export type Organization = z.infer<typeof organizationSchema>;
+export type DefaultOrganization = z.infer<typeof defaultOrganizationSchema>;
+export type LastOrganization = z.infer<typeof lastOrganizationSchema>;

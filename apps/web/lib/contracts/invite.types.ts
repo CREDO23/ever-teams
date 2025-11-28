@@ -1,80 +1,30 @@
 /**
  * Invite Types and Schemas
  * 
- * Type definitions and schemas for invitations.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/invite.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
 // ENUMS
 // ============================================================================
 
 /**
- * Invitation status enum
- */
-export enum InviteStatusEnum {
-	PENDING = 'PENDING',
-	ACCEPTED = 'ACCEPTED',
-	EXPIRED = 'EXPIRED',
-	REJECTED = 'REJECTED'
-}
-
-// ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Invite interface
- */
-export interface IInvite extends IBasePerTenantEntityModel {
-	token: string;
-	email: string;
-	roleId?: ID;
-	invitedById?: ID;
-	status?: InviteStatusEnum | string;
-	expireDate?: Date | string;
-	actionDate?: Date | string;
-	code?: number;
-	fullName?: string;
-	userId?: ID;
-	teamIds?: ID[];
-	projectIds?: ID[];
-}
-
-/**
- * Invite accept input
- */
-export interface IInviteAcceptInput {
-	inviteId: string;
-	token: string;
-	email: string;
-	fullName?: string;
-	password?: string;
-}
-
-/**
- * Invite resend input
- */
-export interface IInviteResendInput {
-	inviteId: string;
-	invitedById: string;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
-// ============================================================================
-
-/**
- * Invite status enum schema
+ * Invitation status enum schema
  */
 export const inviteStatusEnumSchema = z.enum(['PENDING', 'ACCEPTED', 'EXPIRED', 'REJECTED']);
 
+// ============================================================================
+// SCHEMAS
+// ============================================================================
+
 /**
- * Invite schema for validation
+ * Invite schema - Single source of truth for invite entity
  */
 export const inviteSchema = basePerTenantEntityModelSchema.extend({
 	token: z.string().min(1, 'Token is required'),
@@ -111,10 +61,10 @@ export const inviteResendInputSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TInvite = z.infer<typeof inviteSchema>;
-export type TInviteAcceptInput = z.infer<typeof inviteAcceptInputSchema>;
-export type TInviteResendInput = z.infer<typeof inviteResendInputSchema>;
-export type TInviteStatusEnum = z.infer<typeof inviteStatusEnumSchema>;
+export type InviteStatusEnum = z.infer<typeof inviteStatusEnumSchema>;
+export type Invite = z.infer<typeof inviteSchema>;
+export type InviteAcceptInput = z.infer<typeof inviteAcceptInputSchema>;
+export type InviteResendInput = z.infer<typeof inviteResendInputSchema>;

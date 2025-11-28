@@ -1,43 +1,32 @@
 /**
  * Role Types and Schemas
  * 
- * Type definitions and schemas for user roles and permissions.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/role.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
+// SCHEMAS
 // ============================================================================
 
 /**
- * Role interface defining user permissions and access levels
+ * Permission schema
  */
-export interface IRole extends IBasePerTenantEntityModel {
-	name: string;
-	isSystem?: boolean;
-	description?: string;
-}
+export const permissionSchema = basePerTenantEntityModelSchema.extend({
+	name: z.string().min(1, 'Permission name is required'),
+	description: z.string().optional(),
+	resource: z.string(),
+	action: z.string(),
+	enabled: z.boolean().default(true)
+});
 
 /**
- * Role permission interface
- */
-export interface IRolePermission {
-	id?: string;
-	roleId: string;
-	permission: string;
-	enabled: boolean;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
-// ============================================================================
-
-/**
- * Role schema for validation
+ * Role schema - Single source of truth for role entity
  */
 export const roleSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Role name is required'),
@@ -46,18 +35,16 @@ export const roleSchema = basePerTenantEntityModelSchema.extend({
 });
 
 /**
- * Role permission schema
+ * Role with permissions schema
  */
-export const rolePermissionSchema = z.object({
-	id: z.string().optional(),
-	roleId: z.string(),
-	permission: z.string(),
-	enabled: z.boolean()
+export const roleWithPermissionsSchema = roleSchema.extend({
+	permissions: z.array(permissionSchema).optional()
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TRole = z.infer<typeof roleSchema>;
-export type TRolePermission = z.infer<typeof rolePermissionSchema>;
+export type Permission = z.infer<typeof permissionSchema>;
+export type Role = z.infer<typeof roleSchema>;
+export type RoleWithPermissions = z.infer<typeof roleWithPermissionsSchema>;

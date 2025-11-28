@@ -1,253 +1,27 @@
 /**
  * User Types and Schemas
  * 
- * Type definitions and schemas for user entities and authentication.
- * Base schemas do not include relations to avoid circular dependencies.
- * Use WithRelations schemas when you need the full related data.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/user.types
  */
 
 import { z } from 'zod';
 import { 
-	IBasePerTenantEntityModel, 
-	IRelationalImageAsset,
 	basePerTenantEntityModelSchema,
 	relationalImageAssetSchema,
-	ID,
-	LanguagesEnum,
-	ComponentLayoutStyleEnum,
-	TimeFormatEnum,
 	languagesEnumSchema,
 	componentLayoutStyleEnumSchema,
 	timeFormatEnumSchema
 } from './common.types';
 
-// Type-only imports to avoid circular dependencies
-import type { IRole } from './role.types';
-import type { ITag } from './tag.types';
-import type { IOrganization } from './organization.types';
-import type { IOrganizationTeam } from './team.types';
-import type { IEmployee } from './employee.types';
-import type { IInvite } from './invite.types';
-import type { ISocialAccount } from './social-account.types';
-
 // ============================================================================
-// USER INTERFACES
+// BASE SCHEMAS (without relations to avoid circular deps)
 // ============================================================================
 
 /**
- * Main User interface
- */
-export interface IUser extends IBasePerTenantEntityModel, IRelationalImageAsset {
-	thirdPartyId?: string;
-	name?: string;
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phoneNumber?: string;
-	username?: string;
-	timeZone?: string;
-	timeFormat?: TimeFormatEnum;
-	role?: IRole;
-	roleId?: ID;
-	hash?: string;
-	refreshToken?: string;
-	employee?: IEmployee;
-	employeeId?: ID;
-	defaultTeam?: IOrganizationTeam;
-	defaultTeamId?: ID;
-	lastTeam?: IOrganizationTeam;
-	lastTeamId?: ID;
-	defaultOrganization?: IOrganization;
-	defaultOrganizationId?: ID;
-	lastOrganization?: IOrganization;
-	lastOrganizationId?: ID;
-	tags?: ITag[];
-	preferredLanguage?: string;
-	preferredComponentLayout?: ComponentLayoutStyleEnum;
-	fullName?: string;
-	organizations?: IUserOrganization[];
-	isImporting?: boolean;
-	sourceId?: string;
-	code?: string;
-	codeExpireAt?: Date | string;
-	emailVerifiedAt?: Date | string;
-	lastLoginAt?: Date | string;
-	isEmailVerified?: boolean;
-	emailToken?: string;
-	invites?: IInvite[];
-	socialAccounts?: ISocialAccount[];
-}
-
-/**
- * User-Organization relationship interface
- */
-export interface IUserOrganization extends IBasePerTenantEntityModel {
-	userId: ID;
-	user?: IUser;
-	organizationId: ID;
-	organization?: IOrganization;
-	isDefault?: boolean;
-	isActive?: boolean;
-}
-
-/**
- * Relational user interface
- */
-export interface IRelationalUser {
-	user?: IUser;
-	userId?: ID;
-}
-
-/**
- * User view model for display purposes
- */
-export interface IUserViewModel extends IBasePerTenantEntityModel {
-	fullName: string;
-	email: string;
-	employeeId?: ID;
-	bonus?: number;
-	endWork?: any;
-	id: string;
-	roleName?: string;
-	role?: string;
-	tags?: ITag[];
-	userOrganizationId?: string;
-}
-
-/**
- * User statistics
- */
-export interface IUserStats {
-	count: number;
-	lastMonthActiveUsers: number;
-}
-
-// ============================================================================
-// INPUT INTERFACES
-// ============================================================================
-
-/**
- * User find input
- */
-export interface IUserFindInput extends IBasePerTenantEntityModel {
-	thirdPartyId?: string;
-	email?: string;
-}
-
-/**
- * User email input
- */
-export interface IUserEmailInput {
-	email: string;
-}
-
-/**
- * User password input  
- */
-export interface IUserPasswordInput {
-	password: string;
-}
-
-/**
- * User login input
- */
-export interface IUserLoginInput extends IUserEmailInput, IUserPasswordInput {}
-
-/**
- * User token input
- */
-export interface IUserTokenInput {
-	token: string;
-}
-
-/**
- * User create input
- */
-export interface IUserCreateInput extends IRelationalImageAsset {
-	firstName?: string;
-	lastName?: string;
-	email?: string;
-	phoneNumber?: string;
-	username?: string;
-	roleId?: string;
-	hash?: string;
-	tags?: ITag[];
-	preferredLanguage?: LanguagesEnum;
-	preferredComponentLayout?: ComponentLayoutStyleEnum;
-	timeZone?: string;
-	timeFormat?: TimeFormatEnum;
-	defaultTeamId?: string;
-	lastTeamId?: string;
-	defaultOrganizationId?: string;
-	lastOrganizationId?: string;
-}
-
-/**
- * User update input
- */
-export interface IUserUpdateInput extends IUserCreateInput {
-	id?: string;
-}
-
-/**
- * User registration input
- */
-export interface IUserRegistrationInput {
-	user: IUser;
-	password?: string;
-	confirmPassword?: string;
-	originalUrl?: string;
-	organizationId?: string;
-	createdByUserId?: string;
-	isImporting?: boolean;
-	sourceId?: string;
-	inviteId?: string;
-	featureAsEmployee?: boolean;
-}
-
-// ============================================================================
-// RESPONSE INTERFACES
-// ============================================================================
-
-/**
- * Auth response
- */
-export interface IAuthResponse {
-	user: IUser;
-	token: string;
-	refresh_token?: string;
-}
-
-/**
- * Workspace response
- */
-export interface IWorkspaceResponse {
-	token: string;
-	user: IUser;
-}
-
-/**
- * Sign-in workspace response
- */
-export interface IUserSigninWorkspaceResponse {
-	workspaces: IWorkspaceResponse[];
-	confirmed_email: string;
-	show_popup?: boolean;
-	total_workspaces?: number;
-	defaultTeamId?: string;
-	defaultOrganizationId?: string;
-	lastTeamId?: string;
-	lastOrganizationId?: string;
-}
-
-// ============================================================================
-// BASE ZOD SCHEMAS (without relations to avoid circular deps)
-// ============================================================================
-
-/**
- * Base user schema without relations
+ * Base user schema - Single source of truth for user entity
  */
 export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAssetSchema)
 	.extend({
@@ -282,7 +56,7 @@ export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAs
 	});
 
 /**
- * Base user-organization relationship schema without relations
+ * User-Organization relationship schema
  */
 export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
@@ -292,10 +66,45 @@ export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
 });
 
 /**
- * Base relational user schema without relations
+ * Relational user schema
  */
 export const relationalUserSchema = z.object({
 	userId: z.string().optional()
+});
+
+/**
+ * User view model schema for display purposes
+ */
+export const userViewModelSchema = basePerTenantEntityModelSchema.extend({
+	fullName: z.string(),
+	email: z.string().email(),
+	employeeId: z.string().optional(),
+	bonus: z.number().optional(),
+	endWork: z.any().optional(),
+	id: z.string(),
+	roleName: z.string().optional(),
+	role: z.string().optional(),
+	userOrganizationId: z.string().optional()
+});
+
+/**
+ * User statistics schema
+ */
+export const userStatsSchema = z.object({
+	count: z.number(),
+	lastMonthActiveUsers: z.number()
+});
+
+// ============================================================================
+// INPUT SCHEMAS
+// ============================================================================
+
+/**
+ * User find input schema
+ */
+export const userFindInputSchema = basePerTenantEntityModelSchema.extend({
+	thirdPartyId: z.string().optional(),
+	email: z.string().email().optional()
 });
 
 /**
@@ -316,6 +125,13 @@ export const userPasswordInputSchema = z.object({
  * User login input schema
  */
 export const userLoginInputSchema = userEmailInputSchema.merge(userPasswordInputSchema);
+
+/**
+ * User token input schema
+ */
+export const userTokenInputSchema = z.object({
+	token: z.string()
+});
 
 /**
  * User create input schema
@@ -367,6 +183,10 @@ export const userRegistrationInputSchema = z.object({
 	}
 );
 
+// ============================================================================
+// RESPONSE SCHEMAS
+// ============================================================================
+
 /**
  * Auth response schema
  */
@@ -390,8 +210,8 @@ export const workspaceResponseSchema = z.object({
 export const userSigninWorkspaceResponseSchema = z.object({
 	workspaces: z.array(workspaceResponseSchema),
 	confirmed_email: z.string(),
-	show_popup: z.boolean(),
-	total_workspaces: z.number(),
+	show_popup: z.boolean().optional(),
+	total_workspaces: z.number().optional(),
 	defaultTeamId: z.string().optional(),
 	defaultOrganizationId: z.string().optional(),
 	lastTeamId: z.string().optional(),
@@ -404,7 +224,7 @@ export const userSigninWorkspaceResponseSchema = z.object({
 
 /**
  * User schema with all relations
- * Use this only when you need the full related data and are sure there's no circular dependency
+ * Use this only when you need the full related data
  */
 export const userWithRelationsSchema = userSchema.extend({
 	role: z.lazy(() => {
@@ -449,6 +269,16 @@ export const userWithRelationsSchema = userSchema.extend({
 });
 
 /**
+ * User view model with relations schema
+ */
+export const userViewModelWithRelationsSchema = userViewModelSchema.extend({
+	tags: z.lazy(() => {
+		const { tagSchema } = require('./tag.types');
+		return z.array(tagSchema).optional();
+	})
+});
+
+/**
  * User-organization schema with relations
  */
 export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
@@ -468,21 +298,31 @@ export const relationalUserWithRelationsSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TUser = z.infer<typeof userSchema>;
-export type TUserWithRelations = z.infer<typeof userWithRelationsSchema>;
-export type TUserOrganization = z.infer<typeof userOrganizationSchema>;
-export type TUserOrganizationWithRelations = z.infer<typeof userOrganizationWithRelationsSchema>;
-export type TRelationalUser = z.infer<typeof relationalUserSchema>;
-export type TRelationalUserWithRelations = z.infer<typeof relationalUserWithRelationsSchema>;
-export type TUserEmailInput = z.infer<typeof userEmailInputSchema>;
-export type TUserPasswordInput = z.infer<typeof userPasswordInputSchema>;
-export type TUserLoginInput = z.infer<typeof userLoginInputSchema>;
-export type TUserCreateInput = z.infer<typeof userCreateInputSchema>;
-export type TUserUpdateInput = z.infer<typeof userUpdateInputSchema>;
-export type TUserRegistrationInput = z.infer<typeof userRegistrationInputSchema>;
-export type TAuthResponse = z.infer<typeof authResponseSchema>;
-export type TWorkspaceResponse = z.infer<typeof workspaceResponseSchema>;
-export type TUserSigninWorkspaceResponse = z.infer<typeof userSigninWorkspaceResponseSchema>;
+// Entity types
+export type User = z.infer<typeof userSchema>;
+export type UserWithRelations = z.infer<typeof userWithRelationsSchema>;
+export type UserOrganization = z.infer<typeof userOrganizationSchema>;
+export type UserOrganizationWithRelations = z.infer<typeof userOrganizationWithRelationsSchema>;
+export type RelationalUser = z.infer<typeof relationalUserSchema>;
+export type RelationalUserWithRelations = z.infer<typeof relationalUserWithRelationsSchema>;
+export type UserViewModel = z.infer<typeof userViewModelSchema>;
+export type UserViewModelWithRelations = z.infer<typeof userViewModelWithRelationsSchema>;
+export type UserStats = z.infer<typeof userStatsSchema>;
+
+// Input types
+export type UserFindInput = z.infer<typeof userFindInputSchema>;
+export type UserEmailInput = z.infer<typeof userEmailInputSchema>;
+export type UserPasswordInput = z.infer<typeof userPasswordInputSchema>;
+export type UserLoginInput = z.infer<typeof userLoginInputSchema>;
+export type UserTokenInput = z.infer<typeof userTokenInputSchema>;
+export type UserCreateInput = z.infer<typeof userCreateInputSchema>;
+export type UserUpdateInput = z.infer<typeof userUpdateInputSchema>;
+export type UserRegistrationInput = z.infer<typeof userRegistrationInputSchema>;
+
+// Response types
+export type AuthResponse = z.infer<typeof authResponseSchema>;
+export type WorkspaceResponse = z.infer<typeof workspaceResponseSchema>;
+export type UserSigninWorkspaceResponse = z.infer<typeof userSigninWorkspaceResponseSchema>;

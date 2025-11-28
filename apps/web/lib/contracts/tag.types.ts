@@ -1,47 +1,26 @@
 /**
  * Tag Types and Schemas
  * 
- * Type definitions and schemas for tags and labels.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/tag.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema } from './common.types';
+import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Tag interface for labeling and categorization
- */
-export interface ITag extends IBasePerTenantEntityModel {
-	name: string;
-	color?: string;
-	description?: string;
-	isSystem?: boolean;
-	icon?: string;
-}
-
-/**
- * Relational tag interface
- */
-export interface IRelationalTag {
-	tags?: ITag[];
-}
-
-// ============================================================================
-// ZOD SCHEMAS
+// SCHEMAS
 // ============================================================================
 
 /**
- * Tag schema for validation
+ * Tag schema - Single source of truth for tag entity
  */
 export const tagSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Tag name is required'),
-	color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color').optional(),
 	description: z.string().optional(),
+	color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Invalid hex color').optional(),
 	isSystem: z.boolean().optional(),
 	icon: z.string().optional()
 });
@@ -50,12 +29,13 @@ export const tagSchema = basePerTenantEntityModelSchema.extend({
  * Relational tag schema
  */
 export const relationalTagSchema = z.object({
-	tags: z.array(tagSchema).optional()
+	tag: tagSchema.optional(),
+	tagId: z.string().optional()
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TTag = z.infer<typeof tagSchema>;
-export type TRelationalTag = z.infer<typeof relationalTagSchema>;
+export type Tag = z.infer<typeof tagSchema>;
+export type RelationalTag = z.infer<typeof relationalTagSchema>;

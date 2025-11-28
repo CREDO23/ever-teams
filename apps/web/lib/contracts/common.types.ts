@@ -1,7 +1,8 @@
 /**
  * Common Types and Schemas
  * 
- * Shared base types, enums, and schemas used across multiple entities.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/common.types
  */
@@ -9,159 +10,86 @@
 import { z } from 'zod';
 
 // ============================================================================
-// BASE TYPES
+// ENUM SCHEMAS
 // ============================================================================
 
 /**
- * Base identifier type used throughout the application
- */
-export type ID = string;
-
-/**
- * Base entity model with common fields for all tenant-based entities
- */
-export interface IBasePerTenantEntityModel {
-	id?: ID;
-	createdAt?: Date | string;
-	updatedAt?: Date | string;
-	isActive?: boolean;
-	isArchived?: boolean;
-	archivedAt?: Date | string;
-	tenantId?: ID;
-	organizationId?: ID;
-}
-
-/**
- * Base relations model for including related entities
- */
-export interface IBaseRelationsEntityModel {
-	relations?: string[];
-}
-
-// ============================================================================
-// COMMON ENUMS
-// ============================================================================
-
-/**
- * Supported languages for the application
- */
-export enum LanguagesEnum {
-	ENGLISH = 'en',
-	BULGARIAN = 'bg',
-	HEBREW = 'he',
-	RUSSIAN = 'ru',
-	FRENCH = 'fr',
-	SPANISH = 'es',
-	CHINESE = 'zh',
-	GERMAN = 'de',
-	PORTUGUESE = 'pt',
-	ITALIAN = 'it',
-	DUTCH = 'nl',
-	POLISH = 'pl',
-	ARABIC = 'ar'
-}
-
-/**
- * Component layout styles for UI preferences
- */
-export enum ComponentLayoutStyleEnum {
-	CARDS_GRID = 'CARDS_GRID',
-	TABLE = 'TABLE'
-}
-
-/**
- * Time format preferences
- */
-export enum TimeFormatEnum {
-	FORMAT_12_HOURS = 12,
-	FORMAT_24_HOURS = 24
-}
-
-/**
- * OAuth provider types
- */
-export enum ProviderEnum {
-	GITHUB = 'github',
-	GOOGLE = 'google',
-	FACEBOOK = 'facebook',
-	TWITTER = 'twitter'
-}
-
-// ============================================================================
-// COMMON INTERFACES
-// ============================================================================
-
-/**
- * Image asset interface for avatars and media
- */
-export interface IImageAsset extends IBasePerTenantEntityModel {
-	url?: string;
-	thumb?: string;
-	width?: number;
-	height?: number;
-	size?: number;
-	isFeatured?: boolean;
-}
-
-/**
- * Relational image asset for entities with images
- */
-export interface IRelationalImageAsset {
-	image?: IImageAsset;
-	imageId?: ID;
-	imageUrl?: string;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
-// ============================================================================
-
-/**
- * Zod schema for LanguagesEnum
+ * Supported languages enum schema
  */
 export const languagesEnumSchema = z.enum([
 	'en', 'bg', 'he', 'ru', 'fr', 'es', 'zh', 'de', 'pt', 'it', 'nl', 'pl', 'ar'
 ]);
 
 /**
- * Zod schema for ComponentLayoutStyleEnum
+ * Component layout styles enum schema
  */
 export const componentLayoutStyleEnumSchema = z.enum(['CARDS_GRID', 'TABLE']);
 
 /**
- * Zod schema for TimeFormatEnum
+ * Time format enum schema
  */
-export const timeFormatEnumSchema = z.union([z.literal(12), z.literal(24)]);
+export const timeFormatEnumSchema = z.union([
+	z.literal(12),
+	z.literal(24)
+]);
 
 /**
- * Zod schema for ProviderEnum
+ * OAuth provider enum schema
  */
 export const providerEnumSchema = z.enum(['github', 'google', 'facebook', 'twitter']);
 
+// ============================================================================
+// BASE SCHEMAS
+// ============================================================================
+
 /**
- * Base entity schema with common fields
+ * Base tenant schema for tenant-related fields
  */
-export const basePerTenantEntityModelSchema = z.object({
+export const baseTenantSchema = z.object({
+	tenant: z.object({
+		id: z.string()
+	}).optional(),
+	tenant_id: z.string().optional()
+});
+
+/**
+ * Base entity model schema with common fields for all entities
+ */
+export const baseEntityModelSchema = z.object({
 	id: z.string().optional(),
 	createdAt: z.union([z.date(), z.string()]).optional(),
 	updatedAt: z.union([z.date(), z.string()]).optional(),
 	isActive: z.boolean().optional(),
 	isArchived: z.boolean().optional(),
-	archivedAt: z.union([z.date(), z.string()]).optional(),
+	archivedAt: z.union([z.date(), z.string()]).optional()
+});
+
+/**
+ * Base per-tenant entity model schema
+ */
+export const basePerTenantEntityModelSchema = baseEntityModelSchema.merge(baseTenantSchema).extend({
 	tenantId: z.string().optional(),
 	organizationId: z.string().optional()
 });
 
 /**
- * Image asset schema
+ * Base relations model schema for including related entities
+ */
+export const baseRelationsEntityModelSchema = z.object({
+	relations: z.array(z.string()).optional()
+});
+
+/**
+ * Image asset schema for avatars and media
  */
 export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
-	url: z.string().optional(),
-	thumb: z.string().optional(),
+	url: z.string().url().optional(),
+	thumb: z.string().url().optional(),
 	width: z.number().optional(),
 	height: z.number().optional(),
 	size: z.number().optional(),
-	isFeatured: z.boolean().optional()
+	fullUrl: z.string().url().optional(),
+	thumbUrl: z.string().url().optional()
 });
 
 /**
@@ -170,16 +98,57 @@ export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
 export const relationalImageAssetSchema = z.object({
 	image: imageAssetSchema.optional(),
 	imageId: z.string().optional(),
-	imageUrl: z.string().optional()
+	imageUrl: z.string().url().optional(),
+	avatarUrl: z.string().url().optional()
+});
+
+/**
+ * Soft delete schema
+ */
+export const softDeleteSchema = z.object({
+	deletedAt: z.union([z.date(), z.string()]).nullable().optional()
+});
+
+/**
+ * Timestamped schema
+ */
+export const timestampedSchema = z.object({
+	createdAt: z.union([z.date(), z.string()]).optional(),
+	updatedAt: z.union([z.date(), z.string()]).optional()
+});
+
+/**
+ * Entity with owner schema
+ */
+export const entityWithOwnerSchema = z.object({
+	ownerId: z.string().optional(),
+	ownerType: z.string().optional()
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TImageAsset = z.infer<typeof imageAssetSchema>;
-export type TRelationalImageAsset = z.infer<typeof relationalImageAssetSchema>;
-export type TLanguagesEnum = z.infer<typeof languagesEnumSchema>;
-export type TComponentLayoutStyleEnum = z.infer<typeof componentLayoutStyleEnumSchema>;
-export type TTimeFormatEnum = z.infer<typeof timeFormatEnumSchema>;
-export type TProviderEnum = z.infer<typeof providerEnumSchema>;
+// Basic types
+export type ID = string;
+
+// Enum types
+export type LanguagesEnum = z.infer<typeof languagesEnumSchema>;
+export type ComponentLayoutStyleEnum = z.infer<typeof componentLayoutStyleEnumSchema>;
+export type TimeFormatEnum = z.infer<typeof timeFormatEnumSchema>;
+export type ProviderEnum = z.infer<typeof providerEnumSchema>;
+
+// Entity types
+export type BaseEntityModel = z.infer<typeof baseEntityModelSchema>;
+export type BasePerTenantEntityModel = z.infer<typeof basePerTenantEntityModelSchema>;
+export type BaseRelationsEntityModel = z.infer<typeof baseRelationsEntityModelSchema>;
+export type ImageAsset = z.infer<typeof imageAssetSchema>;
+export type RelationalImageAsset = z.infer<typeof relationalImageAssetSchema>;
+export type SoftDelete = z.infer<typeof softDeleteSchema>;
+export type Timestamped = z.infer<typeof timestampedSchema>;
+export type EntityWithOwner = z.infer<typeof entityWithOwnerSchema>;
+
+// For backwards compatibility (will be removed in future)
+export type IBasePerTenantEntityModel = BasePerTenantEntityModel;
+export type IImageAsset = ImageAsset;
+export type IRelationalImageAsset = RelationalImageAsset;

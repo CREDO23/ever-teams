@@ -1,46 +1,21 @@
 /**
  * Social Account Types and Schemas
  * 
- * Type definitions and schemas for OAuth social accounts.
+ * Zod schemas are the single source of truth.
+ * Types are inferred from schemas, no duplicate interfaces.
  * 
  * @module lib/contracts/social-account.types
  */
 
 import { z } from 'zod';
-import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID, ProviderEnum, providerEnumSchema } from './common.types';
+import { basePerTenantEntityModelSchema, providerEnumSchema } from './common.types';
 
 // ============================================================================
-// INTERFACES
-// ============================================================================
-
-/**
- * Social account interface for OAuth providers
- */
-export interface ISocialAccount extends IBasePerTenantEntityModel {
-	provider: ProviderEnum | string;
-	providerAccountId: string;
-	userId?: ID;
-	accessToken?: string;
-	refreshToken?: string;
-	expiresAt?: Date | string;
-	scope?: string;
-	tokenType?: string;
-}
-
-/**
- * Social login input
- */
-export interface ISocialLoginInput {
-	provider: ProviderEnum;
-	accessToken: string;
-}
-
-// ============================================================================
-// ZOD SCHEMAS
+// SCHEMAS
 // ============================================================================
 
 /**
- * Social account schema for validation
+ * Social account schema - Single source of truth for social account entity
  */
 export const socialAccountSchema = basePerTenantEntityModelSchema.extend({
 	provider: z.union([providerEnumSchema, z.string()]),
@@ -62,8 +37,8 @@ export const socialLoginInputSchema = z.object({
 });
 
 // ============================================================================
-// TYPE EXPORTS
+// INFERRED TYPES (Generated from schemas - Single source of truth)
 // ============================================================================
 
-export type TSocialAccount = z.infer<typeof socialAccountSchema>;
-export type TSocialLoginInput = z.infer<typeof socialLoginInputSchema>;
+export type SocialAccount = z.infer<typeof socialAccountSchema>;
+export type SocialLoginInput = z.infer<typeof socialLoginInputSchema>;
