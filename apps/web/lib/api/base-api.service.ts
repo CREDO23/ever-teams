@@ -25,23 +25,41 @@ export class BaseAPIService {
 		});
 	}
 
+	private validateResponse<T>(data: any, schema?: z.ZodSchema<T>): T {
+		if (!schema) {
+			return data;
+		}
+
+		try {
+			return schema.parse(data);
+		} catch (error) {
+			if (error instanceof z.ZodError) {
+				console.error('API Response Validation Error:', {
+					errors: error.errors,
+					receivedData: data
+				});
+			}
+			return data;
+		}
+	}
+
 	protected async get<T>(url: string, options?: RequestOptions<T>): Promise<T> {
 		const response = await this.axios.get<T>(url, options?.config);
-		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
+		return this.validateResponse(response.data, options?.responseSchema);
 	}
 
 	protected async post<T>(url: string, options?: RequestOptions<T>): Promise<T> {
 		const response = await this.axios.post<T>(url, options?.body, options?.config);
-		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
+		return this.validateResponse(response.data, options?.responseSchema);
 	}
 
 	protected async put<T>(url: string, options?: RequestOptions<T>): Promise<T> {
 		const response = await this.axios.put<T>(url, options?.body, options?.config);
-		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
+		return this.validateResponse(response.data, options?.responseSchema);
 	}
 
 	protected async delete<T>(url: string, options?: RequestOptions<T>): Promise<T> {
 		const response = await this.axios.delete<T>(url, options?.config);
-		return options?.responseSchema ? options.responseSchema.parse(response.data) : response.data;
+		return this.validateResponse(response.data, options?.responseSchema);
 	}
 }
