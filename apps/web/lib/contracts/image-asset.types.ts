@@ -48,6 +48,8 @@ export const createImageAssetRequestSchema = z.object({
 export const uploadImageAssetRequestSchema = z.object({
 	folder: z.string(),
 	tenantId: z.string().optional(),
+	organizationId: z.string().optional(),
+	isFeatured: z.boolean().optional(),
 });
 
 export const updateImageAssetRequestSchema = z.object({
