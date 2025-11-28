@@ -3,24 +3,15 @@ import {
 	userWithRelationsSchema,
 	updateUserRequestSchema,
 	getUserRequestSchema,
+	getUserByIdRequestSchema,
+	getUserByEmailRequestSchema,
 	deleteUserRequestSchema,
 	type UpdateUserRequest,
 	type GetUserRequest,
+	type GetUserByIdRequest,
+	type GetUserByEmailRequest,
 	type DeleteUserRequest
 } from '../contracts/user.types';
-import { z } from 'zod';
-
-const getUserByIdRequestSchema = z.object({
-	id: z.string(),
-	relations: z.array(z.string()).optional()
-});
-
-const getUserByEmailRequestSchema = z.object({
-	email: z.string().email()
-});
-
-type GetUserByIdRequest = z.infer<typeof getUserByIdRequestSchema>;
-type GetUserByEmailRequest = z.infer<typeof getUserByEmailRequestSchema>;
 
 export class UserService extends BaseAPIService {
 	async getMe(request?: GetUserRequest) {

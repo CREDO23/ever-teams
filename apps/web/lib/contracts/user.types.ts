@@ -133,7 +133,9 @@ export const changePasswordRequestSchema = z.object({
 export const verifyEmailRequestSchema = z.object({
 	token: z.string().min(1, 'Token is required'),
 	code: z.string().optional()
-});export const getUserRequestSchema = z.object({
+});
+
+export const getUserRequestSchema = z.object({
 	id: z.string().optional(),
 	email: z.string().email().optional(),
 	includeEmployee: z.boolean().optional(),
@@ -141,6 +143,15 @@ export const verifyEmailRequestSchema = z.object({
 	includeOrganization: z.boolean().optional(),
 	includeTeams: z.boolean().optional(),
 	relations: z.array(z.string()).optional()
+});
+
+export const getUserByIdRequestSchema = z.object({
+	id: z.string(),
+	relations: z.array(z.string()).optional()
+});
+
+export const getUserByEmailRequestSchema = z.object({
+	email: z.string().email()
 });
 
 export const getUsersRequestSchema = z.object({
@@ -229,6 +240,8 @@ export type ResetPasswordRequest = z.infer<typeof resetPasswordRequestSchema>;
 export type ChangePasswordRequest = z.infer<typeof changePasswordRequestSchema>;
 export type VerifyEmailRequest = z.infer<typeof verifyEmailRequestSchema>;
 export type GetUserRequest = z.infer<typeof getUserRequestSchema>;
+export type GetUserByIdRequest = z.infer<typeof getUserByIdRequestSchema>;
+export type GetUserByEmailRequest = z.infer<typeof getUserByEmailRequestSchema>;
 export type GetUsersRequest = z.infer<typeof getUsersRequestSchema>;
 export type CreateUserRequest = z.infer<typeof createUserRequestSchema>;
 export type UpdateUserRequest = z.infer<typeof updateUserRequestSchema>;
