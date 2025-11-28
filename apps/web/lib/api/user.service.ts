@@ -9,10 +9,6 @@ import {
 } from '../contracts/user.types';
 
 export class UserService extends BaseAPIService {
-	/**
-	 * Get current authenticated user
-	 * Backend returns IUser object with relations
-	 */
 	async getMe(options?: GetUserRequest, bearerToken?: string) {
 		const params = options ? getUserRequestSchema.parse(options) : {};
 		return this.get('/user/me', {
@@ -24,10 +20,6 @@ export class UserService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Get user by ID
-	 * Backend returns IUser object
-	 */
 	async getUserById(id: string, options?: { relations?: string[] }, bearerToken?: string) {
 		const params = options?.relations ? { data: JSON.stringify({ relations: options.relations }) } : {};
 		return this.get(`/user/${id}`, {
@@ -39,10 +31,6 @@ export class UserService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Get user by email
-	 * Backend returns IUser object
-	 */
 	async getUserByEmail(email: string, bearerToken?: string) {
 		return this.get(`/user/email/${email}`, {
 			config: {
@@ -52,10 +40,6 @@ export class UserService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Update user profile
-	 * Backend returns updated IUser object
-	 */
 	async updateUser(id: string, data: UpdateUserRequest, bearerToken?: string) {
 		const validatedData = updateUserRequestSchema.parse(data);
 		return this.put(`/user/${id}`, {
@@ -67,10 +51,6 @@ export class UserService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Delete user by ID
-	 * Backend returns success response
-	 */
 	async deleteUser(id: string, bearerToken?: string) {
 		return this.delete(`/user/${id}`, {
 			config: {
@@ -79,10 +59,6 @@ export class UserService extends BaseAPIService {
 		});
 	}
 
-	/**
-	 * Reset user data
-	 * Backend returns success response
-	 */
 	async resetUser(bearerToken?: string) {
 		return this.delete('/user/reset', {
 			config: {
