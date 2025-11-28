@@ -16,6 +16,11 @@ export const signInEmailRequestSchema = z.object({
 	appName: z.string().optional()
 });
 
+export const signInEmailResponseSchema = z.object({
+	status: z.number(),
+	message: z.string()
+});
+
 export const signInPasscodeRequestSchema = z.object({
 	email: z.string().email(),
 	code: z.string(),
@@ -77,6 +82,7 @@ export const registerWithAppRequestSchema = z.object({
 export type AuthToken = z.infer<typeof authTokenSchema>;
 export type AuthResponse = z.infer<typeof authResponseSchema>;
 export type SignInEmailRequest = z.infer<typeof signInEmailRequestSchema>;
+export type SignInEmailResponse = z.infer<typeof signInEmailResponseSchema>;
 export type SignInPasscodeRequest = z.infer<typeof signInPasscodeRequestSchema>;
 export type SignInEmailConfirmResponse = z.infer<typeof signInEmailConfirmResponseSchema>;
 export type RegisterWithAppRequest = z.infer<typeof registerWithAppRequestSchema>;

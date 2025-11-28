@@ -1,11 +1,12 @@
-import { z } from 'zod';
 import { BaseAPIService } from './base-api.service';
 import {
 	signInEmailRequestSchema,
+	signInEmailResponseSchema,
 	signInPasscodeRequestSchema,
 	signInEmailConfirmResponseSchema,
 	registerWithAppRequestSchema,
 	type SignInEmailRequest,
+	type SignInEmailResponse,
 	type SignInPasscodeRequest,
 	type SignInEmailConfirmResponse,
 	type RegisterWithAppRequest
@@ -21,15 +22,11 @@ export class AuthService extends BaseAPIService {
 		});
 	}
 
-	async signInWithEmail(data: SignInEmailRequest): Promise<{ status: number; message: string }> {
+	async signInWithEmail(data: SignInEmailRequest): Promise<SignInEmailResponse> {
 		const validatedData = signInEmailRequestSchema.parse(data);
-		const responseSchema = z.object({
-			status: z.number(),
-			message: z.string()
-		});
 		return this.post('/auth/signin.email', {
 			body: validatedData,
-			responseSchema
+			responseSchema: signInEmailResponseSchema
 		});
 	}
 
