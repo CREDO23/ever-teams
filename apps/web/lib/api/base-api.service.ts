@@ -14,12 +14,22 @@ export interface APIRequest<TBody = any, TResponse = any> {
 	responseSchema?: z.ZodSchema<TResponse>;
 }
 
+// Default function to get token from localStorage
+const getTokenFromLocalStorage = (): string | null => {
+	if (typeof window !== 'undefined') {
+		return localStorage.getItem('access_token');
+	}
+	return null;
+};
+
 export class BaseAPIService {
 	protected axios: AxiosInstance;
-	private getAccessToken?: () => string | null | Promise<string | null>;
+	private getAccessToken: () => string | null | Promise<string | null>;
 
 	constructor(config: BaseAPIConfig = {}) {
-		this.getAccessToken = config.getAccessToken;
+		// Use provided getAccessToken or default to localStorage
+		this.getAccessToken = config.getAccessToken || getTokenFromLocalStorage;
+		
 		this.axios = axios.create({
 			baseURL: config.baseURL || process.env.NEXT_PUBLIC_GAUZY_API_URL || 'http://localhost:3000/api',
 			timeout: config.timeout || 30000,
