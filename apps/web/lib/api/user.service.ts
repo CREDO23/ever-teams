@@ -1,6 +1,5 @@
 import { BaseAPIService } from './base-api.service';
 import {
-	userSchema,
 	userWithRelationsSchema,
 	updateUserRequestSchema,
 	getUserRequestSchema,
@@ -9,62 +8,42 @@ import {
 } from '../contracts/user.types';
 
 export class UserService extends BaseAPIService {
-	async getMe(options?: GetUserRequest, bearerToken?: string) {
-		const params = options ? getUserRequestSchema.parse(options) : {};
+	async getMe(request?: GetUserRequest) {
+		const params = request ? getUserRequestSchema.parse(request) : {};
 		return this.get('/user/me', {
-			config: {
-				params,
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			},
+			params,
 			responseSchema: userWithRelationsSchema
 		});
 	}
 
-	async getUserById(id: string, options?: { relations?: string[] }, bearerToken?: string) {
-		const params = options?.relations ? { data: JSON.stringify({ relations: options.relations }) } : {};
+	async getUserById(id: string, request?: { relations?: string[] }) {
+		const params = request?.relations ? { data: JSON.stringify({ relations: request.relations }) } : {};
 		return this.get(`/user/${id}`, {
-			config: {
-				params,
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			},
+			params,
 			responseSchema: userWithRelationsSchema
 		});
 	}
 
-	async getUserByEmail(email: string, bearerToken?: string) {
+	async getUserByEmail(email: string) {
 		return this.get(`/user/email/${email}`, {
-			config: {
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			},
 			responseSchema: userWithRelationsSchema
 		});
 	}
 
-	async updateUser(id: string, data: UpdateUserRequest, bearerToken?: string) {
-		const validatedData = updateUserRequestSchema.parse(data);
+	async updateUser(id: string, request: UpdateUserRequest) {
+		const validatedData = updateUserRequestSchema.parse(request);
 		return this.put(`/user/${id}`, {
 			body: validatedData,
-			config: {
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			},
 			responseSchema: userWithRelationsSchema
 		});
 	}
 
-	async deleteUser(id: string, bearerToken?: string) {
-		return this.delete(`/user/${id}`, {
-			config: {
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			}
-		});
+	async deleteUser(id: string) {
+		return this.delete(`/user/${id}`);
 	}
 
-	async resetUser(bearerToken?: string) {
-		return this.delete('/user/reset', {
-			config: {
-				headers: bearerToken ? { Authorization: `Bearer ${bearerToken}` } : undefined
-			}
-		});
+	async resetUser() {
+		return this.delete('/user/reset');
 	}
 }
 

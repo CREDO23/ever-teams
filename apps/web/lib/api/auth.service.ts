@@ -18,60 +18,40 @@ import {
 import { userWithRelationsSchema } from '../contracts/user.types';
 
 export class AuthService extends BaseAPIService {
-	/**
-	 * Register a new user
-	 * Backend returns IUser object
-	 */
-	async register(data: RegisterWithAppRequest) {
-		const validatedData = registerWithAppRequestSchema.parse(data);
+	async register(request: RegisterWithAppRequest) {
+		const validatedData = registerWithAppRequestSchema.parse(request);
 		return this.post('/auth/register', {
 			body: validatedData,
 			responseSchema: userWithRelationsSchema
 		});
 	}
 
-	/**
-	 * Send magic link email for workspace signin
-	 * Backend returns { status: HttpStatus.OK, message: 'OK' }
-	 */
-	async signInWithEmail(data: SignInEmailRequest) {
-		const validatedData = signInEmailRequestSchema.parse(data);
+	async signInWithEmail(request: SignInEmailRequest) {
+		const validatedData = signInEmailRequestSchema.parse(request);
 		return this.post('/auth/signin.email', {
 			body: validatedData,
 			responseSchema: signInEmailResponseSchema
 		});
 	}
 
-	/**
-	 * Confirm workspace signin with code
-	 * Backend returns IUserSigninWorkspaceResponse
-	 */
-	async signInWithPasscode(data: SignInPasscodeRequest) {
-		const validatedData = signInPasscodeRequestSchema.parse(data);
+	async signInWithPasscode(request: SignInPasscodeRequest) {
+		const validatedData = signInPasscodeRequestSchema.parse(request);
 		return this.post('/auth/signin.email/confirm', {
 			body: validatedData,
 			responseSchema: signInEmailConfirmResponseSchema
 		});
 	}
 
-	/**
-	 * Refresh access token using refresh token
-	 * Backend returns { token: string }
-	 */
-	async refreshToken(data: RefreshTokenRequest) {
-		const validatedData = refreshTokenRequestSchema.parse(data);
+	async refreshToken(request: RefreshTokenRequest) {
+		const validatedData = refreshTokenRequestSchema.parse(request);
 		return this.post('/auth/refresh-token', {
 			body: validatedData,
 			responseSchema: refreshTokenResponseSchema
 		});
 	}
 
-	/**
-	 * Sign in to a specific workspace
-	 * Backend returns IAuthResponse with user, token, and refresh_token
-	 */
-	async signInWorkspace(data: SignInWorkspaceRequest) {
-		const validatedData = signInWorkspaceRequestSchema.parse(data);
+	async signInWorkspace(request: SignInWorkspaceRequest) {
+		const validatedData = signInWorkspaceRequestSchema.parse(request);
 		return this.post('/auth/signin.workspace', {
 			body: validatedData,
 			responseSchema: authResponseSchema

@@ -4,24 +4,38 @@ import { z } from 'zod';
 export interface BaseAPIConfig {
 	baseURL?: string;
 	timeout?: number;
+	getAccessToken?: () => string | null | Promise<string | null>;
 }
 
-export interface RequestOptions<T = any> {
-	responseSchema?: z.ZodSchema<T>;
-	config?: AxiosRequestConfig;
-	body?: any;
+export interface APIRequest<TBody = any, TResponse = any> {
+	body?: TBody;
+	params?: Record<string, any>;
+	headers?: Record<string, string>;
+	responseSchema?: z.ZodSchema<TResponse>;
 }
 
 export class BaseAPIService {
 	protected axios: AxiosInstance;
+	private getAccessToken?: () => string | null | Promise<string | null>;
 
 	constructor(config: BaseAPIConfig = {}) {
+		this.getAccessToken = config.getAccessToken;
 		this.axios = axios.create({
 			baseURL: config.baseURL || process.env.NEXT_PUBLIC_GAUZY_API_URL || 'http://localhost:3000/api',
 			timeout: config.timeout || 30000,
 			headers: {
 				'Content-Type': 'application/json'
 			}
+		});
+
+		this.axios.interceptors.request.use(async (config) => {
+			if (this.getAccessToken) {
+				const token = await this.getAccessToken();
+				if (token) {
+					config.headers.Authorization = `Bearer ${token}`;
+				}
+			}
+			return config;
 		});
 	}
 
@@ -43,23 +57,43 @@ export class BaseAPIService {
 		}
 	}
 
-	protected async get<T>(url: string, options?: RequestOptions<T>): Promise<T> {
-		const response = await this.axios.get<T>(url, options?.config);
-		return this.validateResponse(response.data, options?.responseSchema);
+	protected async get<TResponse = any>(url: string, request?: APIRequest<never, TResponse>): Promise<TResponse> {
+		const config: AxiosRequestConfig = {
+			params: request?.params,
+			headers: request?.headers
+		};
+		const response = await this.axios.get<TResponse>(url, config);
+		return this.validateResponse(response.data, request?.responseSchema);
 	}
 
-	protected async post<T>(url: string, options?: RequestOptions<T>): Promise<T> {
-		const response = await this.axios.post<T>(url, options?.body, options?.config);
-		return this.validateResponse(response.data, options?.responseSchema);
+	protected async post<TBody = any, TResponse = any>(
+		url: string,
+		request?: APIRequest<TBody, TResponse>
+	): Promise<TResponse> {
+		const config: AxiosRequestConfig = {
+			headers: request?.headers
+		};
+		const response = await this.axios.post<TResponse>(url, request?.body, config);
+		return this.validateResponse(response.data, request?.responseSchema);
 	}
 
-	protected async put<T>(url: string, options?: RequestOptions<T>): Promise<T> {
-		const response = await this.axios.put<T>(url, options?.body, options?.config);
-		return this.validateResponse(response.data, options?.responseSchema);
+	protected async put<TBody = any, TResponse = any>(
+		url: string,
+		request?: APIRequest<TBody, TResponse>
+	): Promise<TResponse> {
+		const config: AxiosRequestConfig = {
+			headers: request?.headers
+		};
+		const response = await this.axios.put<TResponse>(url, request?.body, config);
+		return this.validateResponse(response.data, request?.responseSchema);
 	}
 
-	protected async delete<T>(url: string, options?: RequestOptions<T>): Promise<T> {
-		const response = await this.axios.delete<T>(url, options?.config);
-		return this.validateResponse(response.data, options?.responseSchema);
+	protected async delete<TResponse = any>(url: string, request?: APIRequest<never, TResponse>): Promise<TResponse> {
+		const config: AxiosRequestConfig = {
+			params: request?.params,
+			headers: request?.headers
+		};
+		const response = await this.axios.delete<TResponse>(url, config);
+		return this.validateResponse(response.data, request?.responseSchema);
 	}
 }
