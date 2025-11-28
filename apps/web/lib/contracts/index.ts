@@ -31,3 +31,4 @@ export * from './time-slot.types';
 export * from './timesheet.types';
 export * from './activity.types';
 export * from './screenshot.types';
+export * from './time-slot-minutes.types';
