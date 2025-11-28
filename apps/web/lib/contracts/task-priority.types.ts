@@ -20,7 +20,7 @@ export const taskPrioritySchema = basePerTenantEntityModelSchema.extend({
 	description: z.string().nullish(),
 	icon: z.string().nullish(),
 	color: z.string().nullish(),
-	isSystem: z.boolean().default(false).optional(),s
+	isSystem: z.boolean().default(false).optional(),
 	organizationTeamId: z.string().nullish(),
 	projectId: z.string().nullish(),
 });

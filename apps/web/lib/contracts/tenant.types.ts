@@ -1,11 +1,11 @@
 import { z } from 'zod';
-import { baseEntitySchema } from './common.types';
+import { baseEntityModelSchema } from './common.types';
 import { imageAssetSchema } from './image-asset.types';
 import { organizationSchema } from './organization.types';
 import { rolePermissionSchema } from './role.types';
 
 // ============ Database Schema ============
-export const tenantSchema = baseEntitySchema.extend({
+export const tenantSchema = baseEntityModelSchema.extend({
 	name: z.string().nullish(),
 	logo: z.string().nullish(),
 	standardWorkHoursPerDay: z.number().default(8).optional(),
@@ -31,16 +31,7 @@ export const getTenantRequestSchema = z.object({
 	includeRelations: z.boolean().optional(),
 });
 
-export const createTenantRequestSchema = tenantSchema
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    deletedAt: true,
-    isActive: true,
-    isArchived: true,
-  })
-  .extend({
+export const createTenantRequestSchema = z.object({
 	name: z.string().min(1),
   });
 

@@ -4,10 +4,8 @@ import { TimeLogSourceEnum, TimeLogTypeEnum } from './timer.types';
 import { activitySchema } from './activity.types';
 import { employeeSchema } from './employee.types';
 import { projectSchema } from './project.types';
-import { screenshotSchema } from './screenshot.types';
 import { tagSchema } from './tag.types';
 import { timeLogSchema } from './time-log.types';
-import { timeSlotMinuteSchema } from './time-slot-minutes.types';
 
 export const timeSlotSchema = basePerTenantEntityModelSchema.extend({
 	employeeId: z.string(),
@@ -28,9 +26,9 @@ export const timeSlotWithRelationsSchema = timeSlotSchema.extend({
 	employee: z.lazy(() => employeeSchema).optional(),
 	project: z.lazy(() => projectSchema).nullish(),
 	activities: z.lazy(() => z.array(activitySchema)).optional(),
-	screenshots: z.lazy(() => z.array(screenshotSchema)).optional(),
+	screenshots: z.lazy(() => z.array(z.any())).optional(),
 	timeLogs: z.lazy(() => z.array(timeLogSchema)).optional(),
-	timeSlotMinutes: z.lazy(() => z.array(timeSlotMinuteSchema)).optional(),
+	timeSlotMinutes: z.lazy(() => z.array(z.any())).optional(),
 	tags: z.lazy(() => z.array(tagSchema)).optional(),
 });
 

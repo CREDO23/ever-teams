@@ -21,7 +21,7 @@ export const issueTypeSchema = basePerTenantEntityModelSchema.extend({
 	icon: z.string().nullish(),
 	color: z.string().nullish(),
 	isDefault: z.boolean().default(false).optional(),
-	isSystem: z.boolean().default(false).optional(),s
+	isSystem: z.boolean().default(false).optional(),
 	organizationTeamId: z.string().nullish(),
 	projectId: z.string().nullish(),
 	imageId: z.string().nullish(),

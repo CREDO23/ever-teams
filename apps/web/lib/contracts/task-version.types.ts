@@ -10,7 +10,7 @@ export const taskVersionSchema = basePerTenantEntityModelSchema.extend({
 	description: z.string().nullish(),
 	icon: z.string().nullish(),
 	color: z.string().nullish(),
-	isSystem: z.boolean().default(false).optional(),s
+	isSystem: z.boolean().default(false).optional(),
 	projectId: z.string().nullish(),
 	organizationTeamId: z.string().nullish(),
 });

@@ -30,16 +30,7 @@ export const getLanguagesRequestSchema = z.object({
 	limit: z.number().positive().optional(),
 });
 
-export const createLanguageRequestSchema = languageSchema
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    deletedAt: true,
-    isActive: true,
-    isArchived: true,
-  })
-  .extend({
+export const createLanguageRequestSchema = z.object({
 	name: z.string().min(1),
 	code: z.string().min(2).max(5),
   });

@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { basePerTenantEntityModelSchema } from './common.types';
 import { employeeSchema } from './employee.types';
 import { organizationSchema } from './organization.types';
-import { roleSchema } from './role.types';
 import { userSchema } from './user.types';
 
 export const permissionSchema = basePerTenantEntityModelSchema.extend({

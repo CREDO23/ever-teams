@@ -8,7 +8,6 @@ import { employeeSchema } from './employee.types';
 import { organizationSchema } from './organization.types';
 import { roleSchema } from './role.types';
 import { tagSchema } from './tag.types';
-import { teamSchema } from './team.types';
 import { userSchema } from './user.types';
 
 export const teamSchema = basePerTenantEntityModelSchema.extend({

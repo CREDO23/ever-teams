@@ -29,7 +29,7 @@ export const taskStatusSchema = basePerTenantEntityModelSchema.extend({
   // Workflow flags
 	isTodo: z.boolean().default(false).optional(),
 	isInProgress: z.boolean().default(false).optional(),
-	isDone: z.boolean().default(false).optional(),s
+	isDone: z.boolean().default(false).optional(),
 	organizationTeamId: z.string().nullish(),
 	projectId: z.string().nullish(),
 });
@@ -63,17 +63,7 @@ export const getTaskStatusesRequestSchema = z.object({
 	limit: z.number().positive().optional(),
 });
 
-export const createTaskStatusRequestSchema = taskStatusSchema
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-    deletedAt: true,
-    isActive: true,
-    isArchived: true,
-    isSystem: true,
-  })
-  .extend({
+export const createTaskStatusRequestSchema = z.object({
 	name: z.string().min(1),
 	value: z.string().min(1),
   });

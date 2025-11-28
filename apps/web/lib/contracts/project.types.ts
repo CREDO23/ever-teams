@@ -3,7 +3,6 @@ import { basePerTenantEntityModelSchema } from './common.types';
 import { employeeSchema } from './employee.types';
 import { imageAssetSchema } from './image-asset.types';
 import { projectEmployeeSchema } from './project-employee.types';
-import { projectRepositorySchema } from './project-repository.types';
 import { tagSchema } from './tag.types';
 import { taskSchema } from './task.types';
 import { teamSchema } from './team.types';
@@ -67,7 +66,7 @@ export const projectSchema = basePerTenantEntityModelSchema.extend({
 	customFields: z.record(z.unknown()).nullish(),
 	isTasksAutoSync: z.boolean().default(false).optional(),
 	isTasksAutoSyncOnLabel: z.boolean().default(false).optional(),
-	syncTag: z.string().nullish(),s
+	syncTag: z.string().nullish(),
 	imageId: z.string().nullish(),
 	defaultAssigneeId: z.string().nullish(),
 	organizationContactId: z.string().nullish(),
@@ -93,11 +92,11 @@ export const projectWithRelationsSchema = projectSchema.extend({
 	tasks: z.lazy(() =>
 	z.array(taskSchema)
 	).optional(),
-	repository: z.lazy(() =>
-	).optional(),
+	repository: z.lazy(() => projectRepositorySchema).optional(),
 });
 
 // ============ Project Repository Schema ============
+export const projectRepositorySchema = z.object({
   id: z.string(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),

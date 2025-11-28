@@ -20,7 +20,7 @@ export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	client_focus: z.string().nullish(),
 	overview: z.string().nullish(),
 	imageUrl: z.string().nullish(),
-	currency: z.string().length(3).nullish(), currency code
+	currency: z.string().length(3).nullish(), // currency code
 	timeZone: z.string().nullish(),
 	defaultValueDateType: z.string().nullish(),
 	regionCode: z.string().nullish(),
