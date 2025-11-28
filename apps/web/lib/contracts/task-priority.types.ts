@@ -11,7 +11,7 @@ export const taskPriorityEnum = z.enum([
 	'HIGH',
 	'URGENT',
 	'CUSTOM'
-	]);
+]);
 
 // ============ Database Schema ============
 export const taskPrioritySchema = basePerTenantEntityModelSchema.extend({
@@ -28,12 +28,8 @@ export const taskPrioritySchema = basePerTenantEntityModelSchema.extend({
 // ============ With Relations ============
 export const taskPriorityWithRelationsSchema = taskPrioritySchema.extend({
 	fullIconUrl: z.string().url().optional(),
-	organizationTeam: z.lazy(() =>
-	teamSchema
-	).optional(),
-	project: z.lazy(() =>
-	projectSchema
-	).optional(),
+	organizationTeam: z.lazy(() => teamSchema).optional(),
+	project: z.lazy(() => projectSchema).optional(),
 });
 
 // ============ Request Schemas ============
@@ -66,7 +62,14 @@ export const createTaskPriorityRequestSchema = z.object({
 	organizationTeamId: z.string().nullish(),
 });
 
-export const updateTaskPriorityRequestSchema = createTaskPriorityRequestSchema.partial();
+export const updateTaskPriorityRequestSchema = createTaskPriorityRequestSchema.partial().extend({
+	id: z.string()
+});
+
+export const deleteTaskPriorityRequestSchema = z.object({
+	id: z.string(),
+	tenantId: z.string().nullish()
+});
 
 // ============ Response Schemas ============
 export const taskPriorityResponseSchema = z.object({
@@ -88,5 +91,6 @@ export type GetTaskPriorityRequest = z.infer<typeof getTaskPriorityRequestSchema
 export type GetTaskPrioritiesRequest = z.infer<typeof getTaskPrioritiesRequestSchema>;
 export type CreateTaskPriorityRequest = z.infer<typeof createTaskPriorityRequestSchema>;
 export type UpdateTaskPriorityRequest = z.infer<typeof updateTaskPriorityRequestSchema>;
+export type DeleteTaskPriorityRequest = z.infer<typeof deleteTaskPriorityRequestSchema>;
 export type TaskPriorityResponse = z.infer<typeof taskPriorityResponseSchema>;
 export type TaskPriorityListResponse = z.infer<typeof taskPriorityListResponseSchema>;
