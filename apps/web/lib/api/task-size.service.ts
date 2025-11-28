@@ -78,7 +78,7 @@ export class TaskSizeService extends BaseAPIService {
 		});
 	}
 
-	async delete(request: z.infer<typeof deleteTaskSizeRequestSchema>) {
+	async remove(request: z.infer<typeof deleteTaskSizeRequestSchema>) {
 		const parsedRequest = deleteTaskSizeRequestSchema.parse(request);
 		
 		return this.delete(`${this.baseUrl}/${parsedRequest.id}`, {
