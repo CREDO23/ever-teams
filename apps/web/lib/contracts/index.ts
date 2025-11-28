@@ -32,3 +32,4 @@ export * from './timesheet.types';
 export * from './activity.types';
 export * from './screenshot.types';
 export * from './time-slot-minutes.types';
+export * from './organization-contact.types';
