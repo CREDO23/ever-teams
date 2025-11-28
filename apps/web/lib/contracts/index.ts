@@ -11,3 +11,4 @@ export * from './team.types';
 export * from './employee.types';
 export * from './invite.types';
 export * from './social-account.types';
+export * from './tenant.types';
