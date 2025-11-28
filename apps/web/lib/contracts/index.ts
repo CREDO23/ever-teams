@@ -24,3 +24,4 @@ export * from './project.types';
 export * from './project-employee.types';
 export * from './task-linked-issue.types';
 export * from './task.types';
+export * from './daily-plan.types';
