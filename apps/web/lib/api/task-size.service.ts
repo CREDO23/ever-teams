@@ -18,14 +18,12 @@ export class TaskSizeService extends BaseAPIService {
 		const parsedRequest = request ? getTaskSizesRequestSchema.parse(request) : {};
 		
 		return this.get(this.baseUrl, {
-			requestOptions: {
-				params: parsedRequest,
-				headers: {
-					'tenant-id': parsedRequest.tenantId || '',
-					'organization-id': parsedRequest.organizationId || ''
-				}
+			params: parsedRequest,
+			headers: {
+				'tenant-id': parsedRequest.tenantId || '',
+				'organization-id': parsedRequest.organizationId || ''
 			},
-			responseDataSchema: taskSizeListResponseSchema
+			responseSchema: taskSizeListResponseSchema
 		});
 	}
 
@@ -37,13 +35,11 @@ export class TaskSizeService extends BaseAPIService {
 		}
 		
 		return this.get(`${this.baseUrl}/${parsedRequest.id}`, {
-			requestOptions: {
-				headers: {
-					'tenant-id': parsedRequest.tenantId || '',
-					'organization-id': parsedRequest.organizationId || ''
-				}
+			headers: {
+				'tenant-id': parsedRequest.tenantId || '',
+				'organization-id': parsedRequest.organizationId || ''
 			},
-			responseDataSchema: taskSizeResponseSchema
+			responseSchema: taskSizeResponseSchema
 		});
 	}
 
@@ -51,14 +47,12 @@ export class TaskSizeService extends BaseAPIService {
 		const parsedRequest = createTaskSizeRequestSchema.parse(request);
 		
 		return this.post(this.baseUrl, {
-			requestBody: parsedRequest,
-			requestOptions: {
-				headers: {
-					'tenant-id': parsedRequest.tenantId || '',
-					'organization-id': parsedRequest.organizationId
-				}
+			body: parsedRequest,
+			headers: {
+				'tenant-id': parsedRequest.tenantId || '',
+				'organization-id': parsedRequest.organizationId
 			},
-			responseDataSchema: taskSizeWithRelationsSchema
+			responseSchema: taskSizeWithRelationsSchema
 		});
 	}
 
@@ -67,14 +61,12 @@ export class TaskSizeService extends BaseAPIService {
 		const { id, ...updateData } = parsedRequest;
 		
 		return this.put(`${this.baseUrl}/${id}`, {
-			requestBody: updateData,
-			requestOptions: {
-				headers: {
-					'tenant-id': parsedRequest.tenantId || '',
-					'organization-id': parsedRequest.organizationId || ''
-				}
+			body: updateData,
+			headers: {
+				'tenant-id': parsedRequest.tenantId || '',
+				'organization-id': parsedRequest.organizationId || ''
 			},
-			responseDataSchema: taskSizeWithRelationsSchema
+			responseSchema: taskSizeWithRelationsSchema
 		});
 	}
 
@@ -82,10 +74,8 @@ export class TaskSizeService extends BaseAPIService {
 		const parsedRequest = deleteTaskSizeRequestSchema.parse(request);
 		
 		return this.delete(`${this.baseUrl}/${parsedRequest.id}`, {
-			requestOptions: {
-				headers: {
-					'tenant-id': parsedRequest.tenantId || ''
-				}
+			headers: {
+				'tenant-id': parsedRequest.tenantId || ''
 			}
 		});
 	}
