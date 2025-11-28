@@ -20,3 +20,4 @@ export * from './task-priority.types';
 export * from './task-size.types';
 export * from './task-version.types';
 export * from './issue-type.types';
+export * from './project.types';
