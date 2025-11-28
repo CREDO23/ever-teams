@@ -1,0 +1,44 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "app/**/*.{tsx,ts}",
+    "pages/**/*.{tsx,ts}",
+    "core/**/*.{tsx,ts}"
+  ],
+  "project": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "ignore": [
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "**/*.d.ts",
+    ".next/**",
+    "node_modules/**"
+  ],
+  "ignoreDependencies": [
+    "@types/*",
+    "eslint*",
+    "prettier",
+    "typescript",
+    "postcss",
+    "tailwindcss*",
+    "@tailwindcss/*",
+    "autoprefixer",
+    "sharp",
+    "dotenv"
+  ],
+  "next": {
+    "entry": [
+      "next.config.{js,ts,mjs}",
+      "app/**/page.tsx",
+      "app/**/layout.tsx",
+      "app/**/route.ts",
+      "app/**/default.tsx",
+      "app/**/error.tsx",
+      "app/**/loading.tsx",
+      "app/**/not-found.tsx",
+      "app/**/template.tsx",
+      "pages/**/*.{tsx,ts}"
+    ]
+  }
+}
