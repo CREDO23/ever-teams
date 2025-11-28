@@ -2,8 +2,6 @@
  * User Types and Schemas
  * 
  * Type definitions and schemas for user entities and authentication.
- * Base schemas do not include relations to avoid circular dependencies.
- * Use WithRelations schemas when you need the full related data.
  * 
  * @module lib/contracts/user.types
  */
@@ -22,15 +20,13 @@ import {
 	componentLayoutStyleEnumSchema,
 	timeFormatEnumSchema
 } from './common.types';
-
-// Type-only imports to avoid circular dependencies
-import type { IRole } from './role.types';
-import type { ITag } from './tag.types';
-import type { IOrganization } from './organization.types';
-import type { IOrganizationTeam } from './team.types';
-import type { IEmployee } from './employee.types';
-import type { IInvite } from './invite.types';
-import type { ISocialAccount } from './social-account.types';
+import { IRole, roleSchema } from './role.types';
+import { ITag, tagSchema } from './tag.types';
+import { IOrganization, organizationSchema } from './organization.types';
+import { IOrganizationTeam, organizationTeamSchema } from './team.types';
+import { IEmployee, employeeSchema, relationalEmployeeSchema } from './employee.types';
+import { IInvite, inviteSchema } from './invite.types';
+import { ISocialAccount, socialAccountSchema } from './social-account.types';
 
 // ============================================================================
 // USER INTERFACES
@@ -133,33 +129,15 @@ export interface IUserStats {
  */
 export interface IUserFindInput extends IBasePerTenantEntityModel {
 	thirdPartyId?: string;
+	firstName?: string;
+	lastName?: string;
 	email?: string;
-}
-
-/**
- * User email input
- */
-export interface IUserEmailInput {
-	email: string;
-}
-
-/**
- * User password input  
- */
-export interface IUserPasswordInput {
-	password: string;
-}
-
-/**
- * User login input
- */
-export interface IUserLoginInput extends IUserEmailInput, IUserPasswordInput {}
-
-/**
- * User token input
- */
-export interface IUserTokenInput {
-	token: string;
+	phoneNumber?: string;
+	username?: string;
+	role?: IRole;
+	roleId?: string;
+	imageUrl?: string;
+	preferredLanguage?: LanguagesEnum;
 }
 
 /**
@@ -171,17 +149,19 @@ export interface IUserCreateInput extends IRelationalImageAsset {
 	email?: string;
 	phoneNumber?: string;
 	username?: string;
+	role?: IRole;
 	roleId?: string;
 	hash?: string;
+	imageUrl?: string;
 	tags?: ITag[];
 	preferredLanguage?: LanguagesEnum;
 	preferredComponentLayout?: ComponentLayoutStyleEnum;
 	timeZone?: string;
 	timeFormat?: TimeFormatEnum;
-	defaultTeamId?: string;
-	lastTeamId?: string;
-	defaultOrganizationId?: string;
-	lastOrganizationId?: string;
+	defaultTeamId?: ID;
+	lastTeamId?: ID;
+	defaultOrganizationId?: ID;
+	lastOrganizationId?: ID;
 }
 
 /**
@@ -207,12 +187,61 @@ export interface IUserRegistrationInput {
 	featureAsEmployee?: boolean;
 }
 
+/**
+ * User email input
+ */
+export interface IUserEmailInput {
+	email: string;
+}
+
+/**
+ * User password input
+ */
+export interface IUserPasswordInput {
+	password: string;
+}
+
+/**
+ * User token input
+ */
+export interface IUserTokenInput {
+	token: string;
+}
+
+/**
+ * User code input
+ */
+export interface IUserCodeInput {
+	code: string;
+}
+
+/**
+ * User login input
+ */
+export interface IUserLoginInput extends IUserEmailInput, IUserPasswordInput {}
+
+/**
+ * Email verification token payload
+ */
+export interface IVerificationTokenPayload extends IUserEmailInput {
+	id: string;
+}
+
+/**
+ * Find me user options
+ */
+export interface IFindMeUser {
+	includeEmployee?: boolean;
+	includeOrganization?: boolean;
+	relations?: string[];
+}
+
 // ============================================================================
 // RESPONSE INTERFACES
 // ============================================================================
 
 /**
- * Auth response
+ * Authentication response
  */
 export interface IAuthResponse {
 	user: IUser;
@@ -223,9 +252,19 @@ export interface IAuthResponse {
 /**
  * Workspace response
  */
-export interface IWorkspaceResponse {
-	token: string;
+export interface IWorkspaceResponse extends IUserTokenInput {
 	user: IUser;
+}
+
+/**
+ * Workspace interface
+ */
+export interface IWorkSpace {
+	id: string;
+	name: string;
+	imgUrl: string;
+	isOnline: boolean;
+	isSelected?: boolean;
 }
 
 /**
@@ -234,22 +273,36 @@ export interface IWorkspaceResponse {
 export interface IUserSigninWorkspaceResponse {
 	workspaces: IWorkspaceResponse[];
 	confirmed_email: string;
-	show_popup?: boolean;
-	total_workspaces?: number;
-	defaultTeamId?: string;
-	defaultOrganizationId?: string;
-	lastTeamId?: string;
-	lastOrganizationId?: string;
+	show_popup: boolean;
+	total_workspaces: number;
+	defaultTeamId?: ID;
+	defaultOrganizationId?: ID;
+	lastTeamId?: ID;
+	lastOrganizationId?: ID;
 }
 
 // ============================================================================
-// BASE ZOD SCHEMAS (without relations to avoid circular deps)
+// ZOD SCHEMAS
 // ============================================================================
 
 /**
- * Base user schema without relations
+ * User-Organization schema
  */
-export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAssetSchema)
+export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
+	userId: z.string(),
+	user: z.lazy(() => userSchema).optional(),
+	organizationId: z.string(),
+	organization: organizationSchema.optional(),
+	isDefault: z.boolean().optional(),
+	isActive: z.boolean().optional()
+});
+
+/**
+ * Main User schema
+ */
+export const userSchema = basePerTenantEntityModelSchema
+	.merge(relationalImageAssetSchema)
+	.merge(relationalEmployeeSchema)
 	.extend({
 		thirdPartyId: z.string().optional(),
 		name: z.string().optional(),
@@ -260,17 +313,23 @@ export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAs
 		username: z.string().optional(),
 		timeZone: z.string().optional(),
 		timeFormat: timeFormatEnumSchema.optional(),
+		role: roleSchema.optional(),
 		roleId: z.string().optional(),
 		hash: z.string().optional(),
 		refreshToken: z.string().optional(),
-		employeeId: z.string().optional(),
+		defaultTeam: organizationTeamSchema.optional(),
 		defaultTeamId: z.string().optional(),
+		lastTeam: organizationTeamSchema.optional(),
 		lastTeamId: z.string().optional(),
+		defaultOrganization: organizationSchema.optional(),
 		defaultOrganizationId: z.string().optional(),
+		lastOrganization: organizationSchema.optional(),
 		lastOrganizationId: z.string().optional(),
+		tags: z.array(tagSchema).optional(),
 		preferredLanguage: z.string().optional(),
 		preferredComponentLayout: componentLayoutStyleEnumSchema.optional(),
 		fullName: z.string().optional(),
+		organizations: z.array(z.lazy(() => userOrganizationSchema)).optional(),
 		isImporting: z.boolean().optional(),
 		sourceId: z.string().optional(),
 		code: z.string().optional(),
@@ -278,23 +337,16 @@ export const userSchema = basePerTenantEntityModelSchema.merge(relationalImageAs
 		emailVerifiedAt: z.union([z.date(), z.string()]).optional(),
 		lastLoginAt: z.union([z.date(), z.string()]).optional(),
 		isEmailVerified: z.boolean().optional(),
-		emailToken: z.string().optional()
+		emailToken: z.string().optional(),
+		invites: z.array(inviteSchema).optional(),
+		socialAccounts: z.array(socialAccountSchema).optional()
 	});
 
 /**
- * Base user-organization relationship schema without relations
- */
-export const userOrganizationSchema = basePerTenantEntityModelSchema.extend({
-	userId: z.string(),
-	organizationId: z.string(),
-	isDefault: z.boolean().optional(),
-	isActive: z.boolean().optional()
-});
-
-/**
- * Base relational user schema without relations
+ * Relational user schema
  */
 export const relationalUserSchema = z.object({
+	user: z.lazy(() => userSchema).optional(),
 	userId: z.string().optional()
 });
 
@@ -328,6 +380,7 @@ export const userCreateInputSchema = relationalImageAssetSchema.extend({
 	username: z.string().optional(),
 	roleId: z.string().optional(),
 	hash: z.string().optional(),
+	tags: z.array(tagSchema).optional(),
 	preferredLanguage: languagesEnumSchema.optional(),
 	preferredComponentLayout: componentLayoutStyleEnumSchema.optional(),
 	timeZone: z.string().optional(),
@@ -399,84 +452,12 @@ export const userSigninWorkspaceResponseSchema = z.object({
 });
 
 // ============================================================================
-// SCHEMAS WITH RELATIONS (use carefully to avoid circular deps)
-// ============================================================================
-
-/**
- * User schema with all relations
- * Use this only when you need the full related data and are sure there's no circular dependency
- */
-export const userWithRelationsSchema = userSchema.extend({
-	role: z.lazy(() => {
-		const { roleSchema } = require('./role.types');
-		return roleSchema.optional();
-	}),
-	employee: z.lazy(() => {
-		const { employeeSchema } = require('./employee.types');
-		return employeeSchema.optional();
-	}),
-	defaultTeam: z.lazy(() => {
-		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.optional();
-	}),
-	lastTeam: z.lazy(() => {
-		const { organizationTeamSchema } = require('./team.types');
-		return organizationTeamSchema.optional();
-	}),
-	defaultOrganization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
-	}),
-	lastOrganization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
-	}),
-	tags: z.lazy(() => {
-		const { tagSchema } = require('./tag.types');
-		return z.array(tagSchema).optional();
-	}),
-	organizations: z.lazy(() => {
-		return z.array(userOrganizationWithRelationsSchema).optional();
-	}),
-	invites: z.lazy(() => {
-		const { inviteSchema } = require('./invite.types');
-		return z.array(inviteSchema).optional();
-	}),
-	socialAccounts: z.lazy(() => {
-		const { socialAccountSchema } = require('./social-account.types');
-		return z.array(socialAccountSchema).optional();
-	})
-});
-
-/**
- * User-organization schema with relations
- */
-export const userOrganizationWithRelationsSchema = userOrganizationSchema.extend({
-	user: z.lazy(() => userSchema).optional(),
-	organization: z.lazy(() => {
-		const { organizationSchema } = require('./organization.types');
-		return organizationSchema.optional();
-	})
-});
-
-/**
- * Relational user schema with full user object
- */
-export const relationalUserWithRelationsSchema = z.object({
-	user: z.lazy(() => userWithRelationsSchema).optional(),
-	userId: z.string().optional()
-});
-
-// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type TUser = z.infer<typeof userSchema>;
-export type TUserWithRelations = z.infer<typeof userWithRelationsSchema>;
 export type TUserOrganization = z.infer<typeof userOrganizationSchema>;
-export type TUserOrganizationWithRelations = z.infer<typeof userOrganizationWithRelationsSchema>;
 export type TRelationalUser = z.infer<typeof relationalUserSchema>;
-export type TRelationalUserWithRelations = z.infer<typeof relationalUserWithRelationsSchema>;
 export type TUserEmailInput = z.infer<typeof userEmailInputSchema>;
 export type TUserPasswordInput = z.infer<typeof userPasswordInputSchema>;
 export type TUserLoginInput = z.infer<typeof userLoginInputSchema>;

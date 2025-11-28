@@ -2,12 +2,15 @@
  * Employee Types and Schemas
  * 
  * Type definitions and schemas for employee entities.
+ * Base schemas do not include relations to avoid circular dependencies.
+ * Use WithRelations schemas when you need the full related data.
  * 
  * @module lib/contracts/employee.types
  */
 
 import { z } from 'zod';
 import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from './common.types';
+import type { IUser } from './user.types';
 
 // ============================================================================
 // INTERFACES
@@ -18,6 +21,7 @@ import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema, ID } from '.
  */
 export interface IEmployee extends IBasePerTenantEntityModel {
 	userId: ID;
+	user?: IUser;
 	employeeLevel?: string;
 	short_description?: string;
 	description?: string;
@@ -51,11 +55,11 @@ export interface IRelationalEmployee {
 }
 
 // ============================================================================
-// ZOD SCHEMAS
+// BASE ZOD SCHEMAS (without relations to avoid circular deps)
 // ============================================================================
 
 /**
- * Employee schema for validation
+ * Base employee schema without relations
  */
 export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string().min(1, 'User ID is required'),
@@ -84,10 +88,32 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 });
 
 /**
- * Relational employee schema
+ * Base relational employee schema without relations
  */
 export const relationalEmployeeSchema = z.object({
-	employee: z.lazy(() => employeeSchema).optional(),
+	employeeId: z.string().optional()
+});
+
+// ============================================================================
+// SCHEMAS WITH RELATIONS (use carefully to avoid circular deps)
+// ============================================================================
+
+/**
+ * Employee schema with all relations
+ * Use this only when you need the full related data and are sure there's no circular dependency
+ */
+export const employeeWithRelationsSchema = employeeSchema.extend({
+	user: z.lazy(() => {
+		const { userSchema } = require('./user.types');
+		return userSchema.optional();
+	})
+});
+
+/**
+ * Relational employee schema with full employee object
+ */
+export const relationalEmployeeWithRelationsSchema = z.object({
+	employee: z.lazy(() => employeeWithRelationsSchema).optional(),
 	employeeId: z.string().optional()
 });
 
@@ -96,4 +122,6 @@ export const relationalEmployeeSchema = z.object({
 // ============================================================================
 
 export type TEmployee = z.infer<typeof employeeSchema>;
+export type TEmployeeWithRelations = z.infer<typeof employeeWithRelationsSchema>;
 export type TRelationalEmployee = z.infer<typeof relationalEmployeeSchema>;
+export type TRelationalEmployeeWithRelations = z.infer<typeof relationalEmployeeWithRelationsSchema>;

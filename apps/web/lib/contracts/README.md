@@ -2,6 +2,37 @@
 
 This module contains TypeScript interfaces and Zod schemas that define the data contracts between the frontend and backend. All types are designed to match the [ever-gauzy](https://github.com/ever-co/ever-gauzy) backend API structure.
 
+## Important: Avoiding Circular Dependencies
+
+To prevent circular dependencies, we separate schemas into two categories:
+
+### 1. Base Schemas (Default)
+- Contain only primitive fields and IDs
+- No nested entity references
+- Safe to import anywhere
+- Named: `{entityName}Schema`
+
+### 2. WithRelations Schemas
+- Include full nested entity references
+- Use `z.lazy()` and dynamic imports to avoid circular deps
+- Use only when you need the full related data
+- Named: `{entityName}WithRelationsSchema`
+
+**Example:**
+```typescript
+// ✅ Use base schema for simple validation (no circular deps)
+import { userSchema, employeeSchema } from '@/lib/contracts';
+
+// ✅ Use WithRelations schema when you need nested data
+import { userWithRelationsSchema } from '@/lib/contracts';
+
+const userWithEmployee = userWithRelationsSchema.parse({
+  id: '123',
+  email: 'user@example.com',
+  employee: { /* full employee data */ }
+});
+```
+
 ## Structure
 
 ```
@@ -19,187 +50,211 @@ lib/contracts/
 └── README.md                # This file
 ```
 
-## File Organization
+## Available Modules
 
-### `common.types.ts`
-Contains shared types used across multiple entities:
-- Base interfaces (`IBasePerTenantEntityModel`, `IRelationalImageAsset`)
-- Common enums (`LanguagesEnum`, `TimeFormatEnum`, `ProviderEnum`)
-- Base Zod schemas
-- Utility types (`ID`)
+| Module | Base Schema | WithRelations Schema | Key Types |
+|--------|-------------|---------------------|----------|
+| `user.types.ts` | `userSchema` | `userWithRelationsSchema` | `IUser`, `TUser`, `TUserWithRelations` |
+| `employee.types.ts` | `employeeSchema` | `employeeWithRelationsSchema` | `IEmployee`, `TEmployee`, `TEmployeeWithRelations` |
+| `role.types.ts` | `roleSchema` | - | `IRole`, `IPermission` |
+| `tag.types.ts` | `tagSchema` | - | `ITag`, `IRelationalTag` |
+| `organization.types.ts` | `organizationSchema` | - | `IOrganization` |
+| `team.types.ts` | `organizationTeamSchema` | - | `IOrganizationTeam`, `ITeamMember` |
+| `invite.types.ts` | `inviteSchema` | - | `IInvite`, `InviteStatusEnum` |
+| `social-account.types.ts` | `socialAccountSchema` | - | `ISocialAccount` |
 
-### Entity-Specific Files
-Each entity has its own file containing:
-- Interfaces for the entity
-- Input/Output interfaces
-- Zod schemas for validation
-- Type exports
+## Usage Examples
 
-#### `user.types.ts`
-- `IUser` - Main user interface
-- `IUserOrganization` - User-organization relationship
-- Authentication interfaces (`IAuthResponse`, `IUserSigninWorkspaceResponse`)
-- User input interfaces (`IUserCreateInput`, `IUserLoginInput`)
-
-#### `role.types.ts`
-- `IRole` - Role definition
-- `IRolePermission` - Role permissions
-
-#### `tag.types.ts`
-- `ITag` - Tag/label definition
-- `IRelationalTag` - Tag relationships
-
-#### `organization.types.ts`
-- `IOrganization` - Organization entity
-- Organization preferences
-
-#### `team.types.ts`
-- `IOrganizationTeam` - Team entity
-- `ITeamMember` - Team membership
-
-#### `employee.types.ts`
-- `IEmployee` - Employee profile
-- `IRelationalEmployee` - Employee relationships
-
-#### `invite.types.ts`
-- `IInvite` - Invitation entity
-- `InviteStatusEnum` - Invitation statuses
-- Invite input interfaces
-
-#### `social-account.types.ts`
-- `ISocialAccount` - OAuth account entity
-- `ISocialLoginInput` - Social login data
-
-## Usage
-
-### Import Patterns
+### Basic Import (No Circular Deps)
 
 ```typescript
-// Import from specific modules (recommended for tree-shaking)
-import { IUser, userSchema } from '@/lib/contracts/user.types';
-import { IRole } from '@/lib/contracts/role.types';
-import { ID, IBasePerTenantEntityModel } from '@/lib/contracts/common.types';
+import { IUser, userSchema } from '@/lib/contracts';
 
-// Or import from barrel export
-import { IUser, IRole, ID, userSchema } from '@/lib/contracts';
+// Validate user data
+const validatedUser = userSchema.parse(userData);
 ```
 
-### Validate Data
+### Using WithRelations Schemas
 
 ```typescript
-import { userSchema } from '@/lib/contracts/user.types';
+// When you need the full nested data
+import { userWithRelationsSchema, TUserWithRelations } from '@/lib/contracts';
 
-// Validate incoming data
-try {
-  const validUser = userSchema.parse(userData);
-  // validUser is now type-safe
-} catch (error) {
-  // Handle validation errors
-}
+const userWithAllData: TUserWithRelations = userWithRelationsSchema.parse({
+  id: '123',
+  email: 'user@example.com',
+  employee: { 
+    id: '456',
+    userId: '123',
+    employeeLevel: 'Senior'
+  },
+  role: { 
+    id: '789',
+    name: 'Admin'
+  },
+  tags: [{ id: 'tag1', name: 'VIP' }]
+});
+```
 
-// Safe parse without throwing
-const result = userSchema.safeParse(userData);
-if (result.success) {
-  // result.data is validated
-} else {
-  // result.error contains validation errors
+### Type Guards
+
+```typescript
+import { userSchema } from '@/lib/contracts';
+
+function isValidUser(data: unknown): data is IUser {
+  try {
+    userSchema.parse(data);
+    return true;
+  } catch {
+    return false;
+  }
 }
 ```
 
-### Type API Responses
+### API Response Handling
 
 ```typescript
-import { IUserLoginInput, TAuthResponse } from '@/lib/contracts/user.types';
-import { authResponseSchema } from '@/lib/contracts/user.types';
+import { authResponseSchema, TAuthResponse } from '@/lib/contracts';
 
-async function login(credentials: IUserLoginInput): Promise<TAuthResponse> {
+async function login(credentials: LoginCredentials): Promise<TAuthResponse> {
   const response = await api.post('/auth/login', credentials);
+  // Validate and type the response
   return authResponseSchema.parse(response.data);
 }
 ```
 
-### Use in React Components
+## Development Guidelines
+
+### Adding New Types
+
+1. Create a new file: `{entity}.types.ts`
+2. Define interfaces first
+3. Create base Zod schemas (without relations)
+4. If needed, create WithRelations schemas (with nested entities)
+5. Export inferred types from schemas
+6. Add exports to `index.ts`
+7. Document in this README
+
+### Template for New Entity Type
 
 ```typescript
-import { IUser } from '@/lib/contracts/user.types';
-import { IOrganizationTeam } from '@/lib/contracts/team.types';
+// {entity}.types.ts
+import { z } from 'zod';
+import { IBasePerTenantEntityModel, basePerTenantEntityModelSchema } from './common.types';
 
-interface UserProfileProps {
-  user: IUser;
-  team?: IOrganizationTeam;
+// Interfaces
+export interface I{Entity} extends IBasePerTenantEntityModel {
+  name: string;
+  // ... other fields
 }
 
-export function UserProfile({ user, team }: UserProfileProps) {
-  return (
-    <div>
-      <h1>{user.fullName || `${user.firstName} ${user.lastName}`}</h1>
-      {team && <p>Team: {team.name}</p>}
-    </div>
-  );
-}
+// Base schema (no relations)
+export const {entity}Schema = basePerTenantEntityModelSchema.extend({
+  name: z.string(),
+  // ... other fields (IDs only for relations)
+});
+
+// WithRelations schema (if needed)
+export const {entity}WithRelationsSchema = {entity}Schema.extend({
+  relatedEntity: z.lazy(() => {
+    const { relatedEntitySchema } = require('./related-entity.types');
+    return relatedEntitySchema.optional();
+  })
+});
+
+// Type exports
+export type T{Entity} = z.infer<typeof {entity}Schema>;
+export type T{Entity}WithRelations = z.infer<typeof {entity}WithRelationsSchema>;
 ```
 
-### Form Validation
+### Naming Conventions
+
+- **Interfaces**: `I{EntityName}` (e.g., `IUser`)
+- **Types**: `T{EntityName}` (e.g., `TUser`)
+- **Base Schemas**: `{entityName}Schema` (e.g., `userSchema`)
+- **Relation Schemas**: `{entityName}WithRelationsSchema` (e.g., `userWithRelationsSchema`)
+- **Enums**: `{EntityName}Enum` (e.g., `InviteStatusEnum`)
+- **Input Types**: `I{Action}{Entity}Input` (e.g., `IUserCreateInput`)
+
+### Best Practices
+
+1. **Always create base schemas first** - They should work independently
+2. **Use WithRelations schemas sparingly** - Only when you actually need nested data
+3. **Keep types aligned with backend DTOs** - Match the ever-gauzy structure
+4. **Use Zod for runtime validation** - Catch errors early
+5. **Prefer composition over duplication** - Reuse common schemas
+6. **Document complex types with JSDoc** - Help future developers
+7. **Use enums for fixed sets of values** - Type safety for constants
+8. **Test imports** - Ensure no circular dependencies
+
+## Testing
+
+```bash
+# Type check
+yarn typecheck
+
+# Test schemas
+yarn test
+
+# Quick test for circular deps
+npx tsx -e "import * as contracts from './lib/contracts'; console.log('✅ No circular deps');"
+```
+
+## Migration Guide
+
+### From Old Types
 
 ```typescript
-import { userRegistrationInputSchema } from '@/lib/contracts/user.types';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+// ❌ Old
+import { IUser } from '@/core/types/interfaces';
 
-function RegistrationForm() {
-  const form = useForm({
-    resolver: zodResolver(userRegistrationInputSchema),
-    defaultValues: {
-      user: {},
-      password: '',
-      confirmPassword: ''
-    }
-  });
-
-  // Form will automatically validate against schema
-}
+// ✅ New
+import { IUser } from '@/lib/contracts';
 ```
 
-### Extending Base Types
+### Handling Relations
 
 ```typescript
-import { IBasePerTenantEntityModel } from '@/lib/contracts/common.types';
+// ❌ Old - might cause circular deps
+const userSchema = z.object({
+  employee: employeeSchema
+});
 
-interface ICustomEntity extends IBasePerTenantEntityModel {
-  customField: string;
-  customNumber: number;
-}
+// ✅ New - base schema
+const userSchema = z.object({
+  employeeId: z.string()
+});
+
+// ✅ New - with relations when needed
+const userWithRelationsSchema = userSchema.extend({
+  employee: z.lazy(() => require('./employee.types').employeeSchema)
+});
 ```
-
-## Best Practices
-
-1. **Import from specific modules** when possible for better tree-shaking
-2. **Always validate API responses** using Zod schemas before using the data
-3. **Use interfaces for props** and type inference for internal state
-4. **Keep contracts in sync** with backend API changes
-5. **One file per entity** - maintain separation of concerns
-6. **Reuse common types** from `common.types.ts` instead of duplicating
-7. **Document breaking changes** when updating contracts
-
-## Maintenance
-
-When the backend API changes:
-
-1. Check the [ever-gauzy contracts](https://github.com/ever-co/ever-gauzy/tree/develop/packages/contracts/src)
-2. Update the corresponding `.types.ts` file
-3. Update both the interface and Zod schema
-4. Run type checking to ensure no breaking changes: `yarn tsc --noEmit`
-5. Update any affected components or services
-6. Update this README if new files are added
 
 ## Future Additions
 
-Planned contract files:
+Planned entity types:
+- `task.types.ts` - Task management
+- `project.types.ts` - Project management
+- `timesheet.types.ts` - Time tracking
+- `payment.types.ts` - Payments and billing
+- `candidate.types.ts` - Candidate management
+- `integration.types.ts` - Third-party integrations
+- `report.types.ts` - Reporting and analytics
 
-- `candidate.types.ts` - Candidate management types
-- `task.types.ts` - Task and project types
-- `project.types.ts` - Project management types
-- `timesheet.types.ts` - Time tracking types
-- `payment.types.ts` - Payment and billing types
-- `integration.types.ts` - Third-party integration types
-- `report.types.ts` - Reporting and analytics types
+## Troubleshooting
+
+### Circular Dependency Error
+
+If you see: `Cannot access 'X' before initialization`
+
+**Solution:** Use the base schema instead of WithRelations schema, or use `z.lazy()` with dynamic imports.
+
+### Type Inference Issues
+
+If TypeScript can't infer types from WithRelations schemas:
+
+**Solution:** Explicitly type the variable:
+```typescript
+const user: TUserWithRelations = userWithRelationsSchema.parse(data);
+```
