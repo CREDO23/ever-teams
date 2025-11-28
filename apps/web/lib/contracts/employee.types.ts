@@ -12,19 +12,16 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	userId: z.string(),
 	contactId: z.string().nullish(),
 	organizationPositionId: z.string().nullish(),
-	
 	employeeLevel: z.string().nullish(),
 	short_description: z.string().max(200).nullish(),
 	description: z.string().nullish(),
 	startedWorkOn: z.union([z.date(), z.string()]).nullish(),
 	endWork: z.union([z.date(), z.string()]).nullish(),
-	
 	payPeriod: z.string().nullish(),
 	billRateValue: z.number().min(0).nullish(),
-	billRateCurrency: z.string().length(3).nullish(), // ISO 4217
+	billRateCurrency: z.string().length(3).nullish(),
 	minimumBillingRate: z.number().min(0).nullish(),
-	reWeeklyLimit: z.number().min(0).nullish(), // Weekly hours limit
-	
+	reWeeklyLimit: z.number().min(0).nullish(),
 	show_anonymous_bonus: z.boolean().default(false).optional(),
 	show_average_bonus: z.boolean().default(false).optional(),
 	show_average_expenses: z.boolean().default(false).optional(),
@@ -32,13 +29,11 @@ export const employeeSchema = basePerTenantEntityModelSchema.extend({
 	show_billrate: z.boolean().default(false).optional(),
 	show_payperiod: z.boolean().default(false).optional(),
 	show_start_work_on: z.boolean().default(false).optional(),
-	
 	isJobSearchActive: z.boolean().default(false).optional(),
 	isOnline: z.boolean().default(false).optional(),
 	isAway: z.boolean().default(false).optional(),
 	isTrackingTime: z.boolean().default(false).optional(),
 	allowScreenshotCapture: z.boolean().default(true).optional(),
-	
 	totalWorkHours: z.number().min(0).default(0).optional(),
 	availableHours: z.number().min(0).nullish(),
 	todayDuration: z.number().min(0).default(0).optional(),
@@ -49,9 +44,9 @@ export const employeeWithRelationsSchema = employeeSchema.extend({
 	user: z.lazy(() => userSchema.nullish()),
 	organizationPositionId: z.string().nullish(),
 	teams: z.lazy(() => z.array(teamSchema).optional()),
-	timeLogs: z.array(z.any()).optional(), // TimeLog schema would be defined separately
-	timeSlots: z.array(z.any()).optional(), // TimeSlot schema would be defined separately
-	tasks: z.array(z.any()).optional() // Task schema would be defined separately
+	timeLogs: z.array(z.any()).optional(),
+	timeSlots: z.array(z.any()).optional(),
+	tasks: z.array(z.any()).optional()
 });
 
 export const getEmployeeRequestSchema = z.object({
@@ -67,7 +62,6 @@ export const getEmployeeRequestSchema = z.object({
 export const getEmployeesRequestSchema = z.object({
 	page: z.number().min(1).optional(),
 	limit: z.number().min(1).max(100).optional(),
-	
 	search: z.string().optional(),
 	organizationId: z.string().optional(),
 	tenantId: z.string().optional(),
@@ -75,13 +69,10 @@ export const getEmployeesRequestSchema = z.object({
 	isOnline: z.boolean().optional(),
 	isTrackingTime: z.boolean().optional(),
 	employeeLevel: z.string().optional(),
-	
 	startedWorkOnFrom: z.string().optional(),
 	startedWorkOnTo: z.string().optional(),
-	
 	sortBy: z.enum(['createdAt', 'startedWorkOn', 'employeeLevel', 'totalWorkHours']).optional(),
 	sortOrder: z.enum(['ASC', 'DESC']).optional(),
-	
 	relations: z.array(z.string()).optional()
 });
 
@@ -153,24 +144,12 @@ export const employeeStatisticsResponseSchema = z.object({
 	totalExpenses: z.number().optional(),
 	totalIncome: z.number().optional(),
 	bonus: z.number().optional()
-});
-
-// Database entity types
-export type Employee = z.infer<typeof employeeSchema>;
-
-// Response types (with relations)
-export type EmployeeWithRelations = z.infer<typeof employeeWithRelationsSchema>;
-
-// Request types
-export type GetEmployeeRequest = z.infer<typeof getEmployeeRequestSchema>;
+});export type Employee = z.infer<typeof employeeSchema>;export type EmployeeWithRelations = z.infer<typeof employeeWithRelationsSchema>;export type GetEmployeeRequest = z.infer<typeof getEmployeeRequestSchema>;
 export type GetEmployeesRequest = z.infer<typeof getEmployeesRequestSchema>;
 export type CreateEmployeeRequest = z.infer<typeof createEmployeeRequestSchema>;
 export type UpdateEmployeeRequest = z.infer<typeof updateEmployeeRequestSchema>;
 export type UpdateEmployeeStatusRequest = z.infer<typeof updateEmployeeStatusRequestSchema>;
 export type GetEmployeeStatisticsRequest = z.infer<typeof getEmployeeStatisticsRequestSchema>;
-export type DeleteEmployeeRequest = z.infer<typeof deleteEmployeeRequestSchema>;
-
-// Response types
-export type EmployeeResponse = z.infer<typeof employeeResponseSchema>;
+export type DeleteEmployeeRequest = z.infer<typeof deleteEmployeeRequestSchema>;export type EmployeeResponse = z.infer<typeof employeeResponseSchema>;
 export type EmployeesListResponse = z.infer<typeof employeesListResponseSchema>;
 export type EmployeeStatisticsResponse = z.infer<typeof employeeStatisticsResponseSchema>;

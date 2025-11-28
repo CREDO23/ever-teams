@@ -20,13 +20,12 @@ export const organizationSchema = basePerTenantEntityModelSchema.extend({
 	client_focus: z.string().nullish(),
 	overview: z.string().nullish(),
 	imageUrl: z.string().nullish(),
-	currency: z.string().length(3).nullish(), // ISO 4217 currency code
+	currency: z.string().length(3).nullish(), currency code
 	timeZone: z.string().nullish(),
 	defaultValueDateType: z.string().nullish(),
 	regionCode: z.string().nullish(),
 	website: z.string().nullish(),
 	contact: z.string().nullish(),
-	
 	ownerId: z.string().nullish(),
 	contactId: z.string().nullish(),
 	imageId: z.string().nullish()
@@ -50,8 +49,8 @@ export const getOrganizationsRequestSchema = z.object({
 	take: z.number().min(1).max(100).optional(),
 	skip: z.number().min(0).optional(),
 	where: z.object({
-		isDefault: z.boolean().optional(),
-		name: z.string().optional()
+	isDefault: z.boolean().optional(),
+	name: z.string().optional()
 	}).optional()
 });
 
@@ -114,18 +113,12 @@ export const deleteOrganizationResponseSchema = z.object({
 });
 
 export type Organization = z.infer<typeof organizationSchema>;
-export type OrganizationWithRelations = z.infer<typeof organizationWithRelationsSchema>;
-
-// Request types
-export type GetOrganizationRequest = z.infer<typeof getOrganizationRequestSchema>;
+export type OrganizationWithRelations = z.infer<typeof organizationWithRelationsSchema>;export type GetOrganizationRequest = z.infer<typeof getOrganizationRequestSchema>;
 export type GetOrganizationsRequest = z.infer<typeof getOrganizationsRequestSchema>;
 export type CreateOrganizationRequest = z.infer<typeof createOrganizationRequestSchema>;
 export type UpdateOrganizationRequest = z.infer<typeof updateOrganizationRequestSchema>;
 export type DeleteOrganizationRequest = z.infer<typeof deleteOrganizationRequestSchema>;
-export type SetDefaultOrganizationRequest = z.infer<typeof setDefaultOrganizationRequestSchema>;
-
-// Response types
-export type OrganizationResponse = z.infer<typeof organizationResponseSchema>;
+export type SetDefaultOrganizationRequest = z.infer<typeof setDefaultOrganizationRequestSchema>;export type OrganizationResponse = z.infer<typeof organizationResponseSchema>;
 export type OrganizationsListResponse = z.infer<typeof organizationsListResponseSchema>;
 export type CreateOrganizationResponse = z.infer<typeof createOrganizationResponseSchema>;
 export type UpdateOrganizationResponse = z.infer<typeof updateOrganizationResponseSchema>;

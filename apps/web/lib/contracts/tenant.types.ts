@@ -6,57 +6,57 @@ import { rolePermissionSchema } from './role.types';
 
 // ============ Database Schema ============
 export const tenantSchema = baseEntitySchema.extend({
-  name: z.string().nullish(),
-  logo: z.string().nullish(),
-  standardWorkHoursPerDay: z.number().default(8).optional(),
-  imageId: z.string().nullish(),
+	name: z.string().nullish(),
+	logo: z.string().nullish(),
+	standardWorkHoursPerDay: z.number().default(8).optional(),
+	imageId: z.string().nullish(),
 });
 
 // ============ With Relations ============
 export const tenantWithRelationsSchema = tenantSchema.extend({
-  organizations: z.lazy(() =>
-    z.array(organizationSchema)
-  ).optional(),
-  rolePermissions: z.lazy(() =>
-    z.array(rolePermissionSchema)
-  ).optional(),
-  image: z.lazy(() => 
-    imageAssetSchema
-  ).optional(),
+	organizations: z.lazy(() =>
+	z.array(organizationSchema)
+	).optional(),
+	rolePermissions: z.lazy(() =>
+	z.array(rolePermissionSchema)
+	).optional(),
+	image: z.lazy(() =>
+	imageAssetSchema
+	).optional(),
 });
 
 // ============ Request Schemas ============
 export const getTenantRequestSchema = z.object({
-  id: z.string().optional(),
-  includeRelations: z.boolean().optional(),
+	id: z.string().optional(),
+	includeRelations: z.boolean().optional(),
 });
 
 export const createTenantRequestSchema = tenantSchema
-  .omit({ 
-    id: true, 
-    createdAt: true, 
+  .omit({
+    id: true,
+    createdAt: true,
     updatedAt: true,
     deletedAt: true,
     isActive: true,
     isArchived: true,
   })
   .extend({
-    name: z.string().min(1),
+	name: z.string().min(1),
   });
 
 export const updateTenantRequestSchema = createTenantRequestSchema.partial();
 
 // ============ Response Schemas ============
 export const tenantResponseSchema = z.object({
-  data: tenantWithRelationsSchema,
-  success: z.boolean(),
-  message: z.string().optional(),
+	data: tenantWithRelationsSchema,
+	success: z.boolean(),
+	message: z.string().optional(),
 });
 
 export const tenantListResponseSchema = z.object({
-  data: z.array(tenantWithRelationsSchema),
-  total: z.number(),
-  success: z.boolean(),
+	data: z.array(tenantWithRelationsSchema),
+	total: z.number(),
+	success: z.boolean(),
 });
 
 // ============ Type Exports ============

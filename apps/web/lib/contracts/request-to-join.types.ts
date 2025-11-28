@@ -5,77 +5,77 @@ import { teamSchema } from './team.types';
 import { userSchema } from './user.types';
 
 export const requestToJoinStatusEnum = z.enum([
-  'pending',
-  'accepted',
-  'rejected',
-  'expired'
-]);
+	'pending',
+	'accepted',
+	'rejected',
+	'expired'
+	]);
 
 export const requestToJoinSchema = basePerTenantEntityModelSchema.extend({
-  email: z.string().email(),
-  fullName: z.string(),
-  position: z.string().nullish(),
-  linkAddress: z.string().url().nullish(),
-  status: requestToJoinStatusEnum,
-  code: z.string().nullish(),
-  organizationTeamId: z.string().uuid(),
-  organizationId: z.string().uuid().nullish(),
-  userId: z.string().uuid().nullish(),
-  expiredAt: z.date().nullish()
+	email: z.string().email(),
+	fullName: z.string(),
+	position: z.string().nullish(),
+	linkAddress: z.string().url().nullish(),
+	status: requestToJoinStatusEnum,
+	code: z.string().nullish(),
+	organizationTeamId: z.string().uuid(),
+	organizationId: z.string().uuid().nullish(),
+	userId: z.string().uuid().nullish(),
+	expiredAt: z.date().nullish()
 });
 
 export const requestToJoinWithRelationsSchema = requestToJoinSchema.extend({
-  organizationTeam: z.lazy(() => teamSchema).optional(),
-  organization: z.lazy(() => organizationSchema).optional(),
-  user: z.lazy(() => userSchema).optional()
+	organizationTeam: z.lazy(() => teamSchema).optional(),
+	organization: z.lazy(() => organizationSchema).optional(),
+	user: z.lazy(() => userSchema).optional()
 });
 
 export const joinTeamRequestSchema = z.object({
-  email: z.string().email(),
-  fullName: z.string(),
-  linkAddress: z.string().url(),
-  position: z.string(),
-  organizationTeamId: z.string().uuid()
+	email: z.string().email(),
+	fullName: z.string(),
+	linkAddress: z.string().url(),
+	position: z.string(),
+	organizationTeamId: z.string().uuid()
 });
 
 export const validateRequestToJoinSchema = z.object({
-  email: z.string().email(),
-  organizationTeamId: z.string().uuid(),
-  code: z.string()
+	email: z.string().email(),
+	organizationTeamId: z.string().uuid(),
+	code: z.string()
 });
 
 export const getRequestToJoinRequestSchema = z.object({
-  email: z.string().email().optional(),
-  organizationTeamId: z.string().uuid().optional(),
-  status: requestToJoinStatusEnum.optional(),
-  relations: z.array(z.string()).optional()
+	email: z.string().email().optional(),
+	organizationTeamId: z.string().uuid().optional(),
+	status: requestToJoinStatusEnum.optional(),
+	relations: z.array(z.string()).optional()
 });
 
 export const acceptRejectRequestSchema = z.object({
-  requestId: z.string().uuid(),
+	requestId: z.string().uuid(),
   action: z.enum(['accept', 'reject']),
-  organizationId: z.string().uuid().optional()
+	organizationId: z.string().uuid().optional()
 });
 
 export const resendCodeRequestSchema = z.object({
-  email: z.string().email(),
-  organizationTeamId: z.string().uuid()
+	email: z.string().email(),
+	organizationTeamId: z.string().uuid()
 });
 
 export const joinTeamResponseSchema = z.object({
   data: requestToJoinWithRelationsSchema.extend({
-    id: z.string().uuid(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    status: z.string()
+	id: z.string().uuid(),
+	createdAt: z.string(),
+	updatedAt: z.string(),
+	status: z.string()
   }),
   message: z.string().optional()
 });
 
 export const requestsToJoinListResponseSchema = z.object({
-  data: z.array(requestToJoinWithRelationsSchema),
-  total: z.number(),
-  message: z.string().optional()
+	data: z.array(requestToJoinWithRelationsSchema),
+	total: z.number(),
+	message: z.string().optional()
 });
 
 export type RequestToJoinStatus = z.infer<typeof requestToJoinStatusEnum>;

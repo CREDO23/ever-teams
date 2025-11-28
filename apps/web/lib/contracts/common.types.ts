@@ -6,20 +6,20 @@ import { z } from 'zod';
 
 export const languagesEnumSchema = z.enum([
 	'en', 'bg', 'he', 'ru', 'fr', 'es', 'zh', 'de', 'pt', 'it', 'nl', 'pl', 'ar'
-]);
+	]);
 
 export const componentLayoutStyleEnumSchema = z.enum(['CARDS_GRID', 'TABLE']);
 
-export const timeFormatEnumSchema = z.union([
+	export const timeFormatEnumSchema = z.union([
 	z.literal(12),
 	z.literal(24)
-]);
+	]);
 
 export const providerEnumSchema = z.enum(['github', 'google', 'facebook', 'twitter']);
 
 export const baseTenantSchema = z.object({
 	tenant: z.object({
-		id: z.string()
+	id: z.string()
 	}).optional(),
 	tenant_id: z.string().optional()
 });

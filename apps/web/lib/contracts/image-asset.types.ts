@@ -3,68 +3,68 @@ import { basePerTenantEntityModelSchema } from './common.types';
 
 // ============ Enums ============
 export const fileStorageProviderEnum = z.enum([
-  'LOCAL',
-  'S3',
-  'WASABI',
-  'CLOUDINARY',
-  'DIGITALOCEAN',
-  'DEBUG'
-]);
+	'LOCAL',
+	'S3',
+	'WASABI',
+	'CLOUDINARY',
+	'DIGITALOCEAN',
+	'DEBUG'
+	]);
 
 // ============ Database Schema ============
 export const imageAssetSchema = basePerTenantEntityModelSchema.extend({
-  name: z.string(),
-  url: z.string().url(),
-  thumb: z.string().nullish(),
-  width: z.number().positive().nullish(),
-  height: z.number().positive().nullish(),
-  size: z.number().positive().nullish(),
-  isFeatured: z.boolean().default(false).optional(),
-  externalProviderId: z.string().nullish(),
-  storageProvider: fileStorageProviderEnum.nullish(),
+	name: z.string(),
+	url: z.string().url(),
+	thumb: z.string().nullish(),
+	width: z.number().positive().nullish(),
+	height: z.number().positive().nullish(),
+	size: z.number().positive().nullish(),
+	isFeatured: z.boolean().default(false).optional(),
+	externalProviderId: z.string().nullish(),
+	storageProvider: fileStorageProviderEnum.nullish(),
 });
 
 // ============ With Relations ============
 export const imageAssetWithRelationsSchema = imageAssetSchema.extend({
-  fullUrl: z.string().url().optional(),
-  thumbUrl: z.string().url().optional(),
+	fullUrl: z.string().url().optional(),
+	thumbUrl: z.string().url().optional(),
 });
 
 // ============ Request Schemas ============
 export const getImageAssetRequestSchema = z.object({
-  id: z.string().optional(),
-  organizationId: z.string().optional(),
-  tenantId: z.string().optional(),
+	id: z.string().optional(),
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional(),
 });
 
 export const createImageAssetRequestSchema = z.object({
-  organizationId: z.string(),
-  tenantId: z.string(),
-  file: z.instanceof(File).optional().or(z.any()),
-  name: z.string().optional(),
-  isFeatured: z.boolean().optional(),
+	organizationId: z.string(),
+	tenantId: z.string(),
+	file: z.instanceof(File).optional().or(z.any()),
+	name: z.string().optional(),
+	isFeatured: z.boolean().optional(),
 });
 
 export const updateImageAssetRequestSchema = z.object({
-  name: z.string().optional(),
-  isFeatured: z.boolean().optional(),
+	name: z.string().optional(),
+	isFeatured: z.boolean().optional(),
 });
 
 export const deleteImageAssetRequestSchema = z.object({
-  id: z.string(),
+	id: z.string(),
 });
 
 // ============ Response Schemas ============
 export const imageAssetResponseSchema = z.object({
-  data: imageAssetWithRelationsSchema,
-  success: z.boolean(),
-  message: z.string().optional(),
+	data: imageAssetWithRelationsSchema,
+	success: z.boolean(),
+	message: z.string().optional(),
 });
 
 export const imageAssetListResponseSchema = z.object({
-  data: z.array(imageAssetWithRelationsSchema),
-  total: z.number(),
-  success: z.boolean(),
+	data: z.array(imageAssetWithRelationsSchema),
+	total: z.number(),
+	success: z.boolean(),
 });
 
 // ============ Type Exports ============

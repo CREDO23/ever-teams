@@ -17,7 +17,6 @@ export const socialAccountSchema = basePerTenantEntityModelSchema.extend({
 	tokenType: z.string().nullish(),
 	idToken: z.string().nullish(),
 	sessionState: z.string().nullish(),
-	
 	userId: z.string()
 });
 
@@ -48,10 +47,10 @@ export const linkSocialAccountRequestSchema = z.object({
 	accessToken: z.string().optional(),
 	idToken: z.string().optional(),
 	profile: z.object({
-		id: z.string(),
-		email: z.string().email().optional(),
-		name: z.string().optional(),
-		picture: z.string().url().optional()
+	id: z.string(),
+	email: z.string().email().optional(),
+	name: z.string().optional(),
+	picture: z.string().url().optional()
 	}).optional()
 }).refine(
 	data => data.code || data.accessToken || data.idToken,
@@ -69,11 +68,11 @@ export const socialAuthRequestSchema = z.object({
 	accessToken: z.string().optional(),
 	idToken: z.string().optional(),
 	profile: z.object({
-		id: z.string(),
-		email: z.string().email(),
-		name: z.string().optional(),
-		picture: z.string().url().optional(),
-		emailVerified: z.boolean().optional()
+	id: z.string(),
+	email: z.string().email(),
+	name: z.string().optional(),
+	picture: z.string().url().optional(),
+	emailVerified: z.boolean().optional()
 	}).optional(),
 	organizationId: z.string().uuid().optional(), // For signup with organization context
 	inviteToken: z.string().optional() // For signup with invite
@@ -113,11 +112,11 @@ export const unlinkSocialAccountResponseSchema = z.object({
 
 export const socialAuthResponseSchema = z.object({
 	data: z.object({
-		user: z.lazy(() => userSchema),
-		employee: z.lazy(() => employeeSchema).optional(),
-		token: z.string(),
-		refreshToken: z.string().optional(),
-		isNewUser: z.boolean()
+	user: z.lazy(() => userSchema),
+	employee: z.lazy(() => employeeSchema).optional(),
+	token: z.string(),
+	refreshToken: z.string().optional(),
+	isNewUser: z.boolean()
 	}),
 	message: z.string().optional(),
 	success: z.boolean()
@@ -125,27 +124,21 @@ export const socialAuthResponseSchema = z.object({
 
 export const refreshSocialTokenResponseSchema = z.object({
 	data: z.object({
-		accessToken: z.string(),
-		refreshToken: z.string().optional(),
-		expiresAt: z.union([z.date(), z.string()]).optional()
+	accessToken: z.string(),
+	refreshToken: z.string().optional(),
+	expiresAt: z.union([z.date(), z.string()]).optional()
 	}),
 	message: z.string().optional(),
 	success: z.boolean()
 });
 
 export type SocialAccount = z.infer<typeof socialAccountSchema>;
-export type SocialAccountWithRelations = z.infer<typeof socialAccountWithRelationsSchema>;
-
-// Request types
-export type GetSocialAccountRequest = z.infer<typeof getSocialAccountRequestSchema>;
+export type SocialAccountWithRelations = z.infer<typeof socialAccountWithRelationsSchema>;export type GetSocialAccountRequest = z.infer<typeof getSocialAccountRequestSchema>;
 export type GetSocialAccountsRequest = z.infer<typeof getSocialAccountsRequestSchema>;
 export type LinkSocialAccountRequest = z.infer<typeof linkSocialAccountRequestSchema>;
 export type UnlinkSocialAccountRequest = z.infer<typeof unlinkSocialAccountRequestSchema>;
 export type SocialAuthRequest = z.infer<typeof socialAuthRequestSchema>;
-export type RefreshSocialTokenRequest = z.infer<typeof refreshSocialTokenRequestSchema>;
-
-// Response types
-export type SocialAccountResponse = z.infer<typeof socialAccountResponseSchema>;
+export type RefreshSocialTokenRequest = z.infer<typeof refreshSocialTokenRequestSchema>;export type SocialAccountResponse = z.infer<typeof socialAccountResponseSchema>;
 export type SocialAccountsListResponse = z.infer<typeof socialAccountsListResponseSchema>;
 export type LinkSocialAccountResponse = z.infer<typeof linkSocialAccountResponseSchema>;
 export type UnlinkSocialAccountResponse = z.infer<typeof unlinkSocialAccountResponseSchema>;

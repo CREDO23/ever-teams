@@ -11,33 +11,33 @@ export enum TaskLinkedIssueTypeEnum {
 }
 
 export const taskLinkedIssueSchema = basePerTenantEntityModelSchema.extend({
-  taskId: z.string(),
-  action: z.number().optional(),
-  issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
-  issueNumber: z.string(),
-  issueId: z.string().nullish(),
-  issueTitle: z.string().nullish(),
-  issueUrl: z.string().url().nullish(),
-  issueStatus: z.string().nullish(),
-  issueBody: z.string().nullish(),
+	taskId: z.string(),
+	action: z.number().optional(),
+	issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
+	issueNumber: z.string(),
+	issueId: z.string().nullish(),
+	issueTitle: z.string().nullish(),
+	issueUrl: z.string().url().nullish(),
+	issueStatus: z.string().nullish(),
+	issueBody: z.string().nullish(),
 });
 
 export const taskLinkedIssueWithRelationsSchema = taskLinkedIssueSchema.extend({
-  task: z.lazy(() => taskSchema),
+	task: z.lazy(() => taskSchema),
 });
 
 export const createTaskLinkedIssueRequestSchema = z.object({
-  taskId: z.string(),
-  action: z.number().optional(),
-  issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
-  issueNumber: z.string(),
-  issueId: z.string().optional(),
-  issueTitle: z.string().optional(),
-  issueUrl: z.string().url().optional(),
-  issueStatus: z.string().optional(),
-  issueBody: z.string().optional(),
-  organizationId: z.string(),
-  tenantId: z.string(),
+	taskId: z.string(),
+	action: z.number().optional(),
+	issueType: z.nativeEnum(TaskLinkedIssueTypeEnum),
+	issueNumber: z.string(),
+	issueId: z.string().optional(),
+	issueTitle: z.string().optional(),
+	issueUrl: z.string().url().optional(),
+	issueStatus: z.string().optional(),
+	issueBody: z.string().optional(),
+	organizationId: z.string(),
+	tenantId: z.string(),
 });
 
 export const updateTaskLinkedIssueRequestSchema = createTaskLinkedIssueRequestSchema.partial().omit({
@@ -47,13 +47,13 @@ export const updateTaskLinkedIssueRequestSchema = createTaskLinkedIssueRequestSc
 });
 
 export const taskLinkedIssueResponseSchema = z.object({
-  data: taskLinkedIssueWithRelationsSchema,
-  message: z.string().optional(),
+	data: taskLinkedIssueWithRelationsSchema,
+	message: z.string().optional(),
 });
 
 export const taskLinkedIssueListResponseSchema = z.object({
-  items: z.array(taskLinkedIssueWithRelationsSchema),
-  total: z.number(),
+	items: z.array(taskLinkedIssueWithRelationsSchema),
+	total: z.number(),
 });
 
 export type TaskLinkedIssue = z.infer<typeof taskLinkedIssueSchema>;

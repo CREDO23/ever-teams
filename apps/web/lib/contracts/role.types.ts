@@ -15,7 +15,6 @@ export const permissionSchema = basePerTenantEntityModelSchema.extend({
 	resource: z.string(),
 	action: z.string(),
 	enabled: z.boolean().default(true),
-	
 	roleId: z.string().nullish()
 });
 
@@ -23,7 +22,6 @@ export const roleSchema = basePerTenantEntityModelSchema.extend({
 	name: z.string().min(1, 'Role name is required'),
 	isSystem: z.boolean().nullish(),
 	description: z.string().nullish(),
-	
 	organizationId: z.string().nullish()
 });
 
@@ -55,8 +53,8 @@ export const getRolesRequestSchema = z.object({
 	take: z.number().min(1).max(100).optional(),
 	skip: z.number().min(0).optional(),
 	where: z.object({
-		isSystem: z.boolean().optional(),
-		name: z.string().optional()
+	isSystem: z.boolean().optional(),
+	name: z.string().optional()
 	}).optional()
 });
 
@@ -65,9 +63,9 @@ export const createRoleRequestSchema = z.object({
 	description: z.string().optional(),
 	organizationId: z.string().uuid().optional(),
 	permissions: z.array(z.object({
-		resource: z.string(),
-		action: z.string(),
-		enabled: z.boolean().default(true)
+	resource: z.string(),
+	action: z.string(),
+	enabled: z.boolean().default(true)
 	})).optional()
 });
 
@@ -92,10 +90,10 @@ export const revokeRoleRequestSchema = z.object({
 export const updateRolePermissionsRequestSchema = z.object({
 	roleId: z.string().uuid(),
 	permissions: z.array(z.object({
-		id: z.string().uuid().optional(),
-		resource: z.string(),
-		action: z.string(),
-		enabled: z.boolean()
+	id: z.string().uuid().optional(),
+	resource: z.string(),
+	action: z.string(),
+	enabled: z.boolean()
 	}))
 });
 
@@ -147,20 +145,14 @@ export type Permission = z.infer<typeof permissionSchema>;
 export type Role = z.infer<typeof roleSchema>;
 export type RolePermission = z.infer<typeof rolePermissionSchema>;
 export type PermissionWithRelations = z.infer<typeof permissionWithRelationsSchema>;
-export type RoleWithRelations = z.infer<typeof roleWithRelationsSchema>;
-
-// Request types
-export type GetRoleRequest = z.infer<typeof getRoleRequestSchema>;
+export type RoleWithRelations = z.infer<typeof roleWithRelationsSchema>;export type GetRoleRequest = z.infer<typeof getRoleRequestSchema>;
 export type GetRolesRequest = z.infer<typeof getRolesRequestSchema>;
 export type CreateRoleRequest = z.infer<typeof createRoleRequestSchema>;
 export type UpdateRoleRequest = z.infer<typeof updateRoleRequestSchema>;
 export type DeleteRoleRequest = z.infer<typeof deleteRoleRequestSchema>;
 export type AssignRoleRequest = z.infer<typeof assignRoleRequestSchema>;
 export type RevokeRoleRequest = z.infer<typeof revokeRoleRequestSchema>;
-export type UpdateRolePermissionsRequest = z.infer<typeof updateRolePermissionsRequestSchema>;
-
-// Response types
-export type RoleResponse = z.infer<typeof roleResponseSchema>;
+export type UpdateRolePermissionsRequest = z.infer<typeof updateRolePermissionsRequestSchema>;export type RoleResponse = z.infer<typeof roleResponseSchema>;
 export type RolesListResponse = z.infer<typeof rolesListResponseSchema>;
 export type CreateRoleResponse = z.infer<typeof createRoleResponseSchema>;
 export type UpdateRoleResponse = z.infer<typeof updateRoleResponseSchema>;

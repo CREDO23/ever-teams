@@ -19,84 +19,84 @@ export enum ActivitySourceEnum {
 }
 
 export const urlMetaDataSchema = z.object({
-  title: z.string().optional(),
-  description: z.string().optional(),
-  imageUrl: z.string().optional(),
+	title: z.string().optional(),
+	description: z.string().optional(),
+	imageUrl: z.string().optional(),
 });
 
 export const activitySchema = basePerTenantEntityModelSchema.extend({
-  title: z.string(),
-  description: z.string().nullish(),
-  timeSlotId: z.string().nullish(),
-  taskId: z.string().nullish(),
-  projectId: z.string().nullish(),
-  employeeId: z.string(),
-  metaData: z.union([z.string(), urlMetaDataSchema]).nullish(),
-  date: z.string(),
-  time: z.string(),
-  duration: z.number().optional(),
-  type: z.string().optional(),
-  source: z.string().optional(),
-  activityTimestamp: z.string().optional(),
-  recordedAt: z.string().datetime().optional(),
+	title: z.string(),
+	description: z.string().nullish(),
+	timeSlotId: z.string().nullish(),
+	taskId: z.string().nullish(),
+	projectId: z.string().nullish(),
+	employeeId: z.string(),
+	metaData: z.union([z.string(), urlMetaDataSchema]).nullish(),
+	date: z.string(),
+	time: z.string(),
+	duration: z.number().optional(),
+	type: z.string().optional(),
+	source: z.string().optional(),
+	activityTimestamp: z.string().optional(),
+	recordedAt: z.string().datetime().optional(),
 });
 
 export const activityWithRelationsSchema = activitySchema.extend({
-  timeSlot: z.lazy(() => timeSlotSchema).nullish(),
-  task: z.lazy(() => taskSchema).nullish(),
-  project: z.lazy(() => projectSchema).nullish(),
-  employee: z.lazy(() => employeeSchema).optional(),
+	timeSlot: z.lazy(() => timeSlotSchema).nullish(),
+	task: z.lazy(() => taskSchema).nullish(),
+	project: z.lazy(() => projectSchema).nullish(),
+	employee: z.lazy(() => employeeSchema).optional(),
 });
 
 export const activityFilterSchema = z.object({
   type: z.enum(['DATE', 'TICKET']),
-  member: z.lazy(() => teamEmployeeSchema).nullable(),
-  taskId: z.string().optional(),
-  dateStart: z.string().datetime().optional(),
-  dateStop: z.string().datetime().optional(),
+	member: z.lazy(() => teamEmployeeSchema).nullable(),
+	taskId: z.string().optional(),
+	dateStart: z.string().datetime().optional(),
+	dateStop: z.string().datetime().optional(),
 });
 
 export const createActivityRequestSchema = z.object({
-  title: z.string(),
-  description: z.string().optional(),
-  timeSlotId: z.string().optional(),
-  taskId: z.string().optional(),
-  projectId: z.string().optional(),
-  employeeId: z.string(),
-  metaData: z.union([z.string(), urlMetaDataSchema]).optional(),
-  date: z.string(),
-  time: z.string(),
-  duration: z.number().optional(),
-  type: z.string().optional(),
-  source: z.string().optional(),
-  activityTimestamp: z.string().optional(),
-  recordedAt: z.string().datetime().optional(),
-  organizationId: z.string(),
-  tenantId: z.string(),
+	title: z.string(),
+	description: z.string().optional(),
+	timeSlotId: z.string().optional(),
+	taskId: z.string().optional(),
+	projectId: z.string().optional(),
+	employeeId: z.string(),
+	metaData: z.union([z.string(), urlMetaDataSchema]).optional(),
+	date: z.string(),
+	time: z.string(),
+	duration: z.number().optional(),
+	type: z.string().optional(),
+	source: z.string().optional(),
+	activityTimestamp: z.string().optional(),
+	recordedAt: z.string().datetime().optional(),
+	organizationId: z.string(),
+	tenantId: z.string(),
 });
 
 export const getActivitiesRequestSchema = z.object({
-  employeeId: z.string().optional(),
-  projectId: z.string().optional(),
-  taskId: z.string().optional(),
-  organizationId: z.string().optional(),
-  tenantId: z.string().optional(),
-  dateStart: z.string().optional(),
-  dateStop: z.string().optional(),
-  page: z.number().optional(),
-  limit: z.number().optional(),
+	employeeId: z.string().optional(),
+	projectId: z.string().optional(),
+	taskId: z.string().optional(),
+	organizationId: z.string().optional(),
+	tenantId: z.string().optional(),
+	dateStart: z.string().optional(),
+	dateStop: z.string().optional(),
+	page: z.number().optional(),
+	limit: z.number().optional(),
 });
 
 export const activityResponseSchema = z.object({
-  data: activityWithRelationsSchema,
-  message: z.string().optional(),
+	data: activityWithRelationsSchema,
+	message: z.string().optional(),
 });
 
 export const activityListResponseSchema = z.object({
-  items: z.array(activityWithRelationsSchema),
-  total: z.number(),
-  page: z.number(),
-  limit: z.number(),
+	items: z.array(activityWithRelationsSchema),
+	total: z.number(),
+	page: z.number(),
+	limit: z.number(),
 });
 
 export type UrlMetaData = z.infer<typeof urlMetaDataSchema>;

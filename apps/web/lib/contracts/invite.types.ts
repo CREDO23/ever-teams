@@ -23,7 +23,6 @@ export const inviteSchema = basePerTenantEntityModelSchema.extend({
 	fullName: z.string().nullish(),
 	code: z.number().nullish(),
 	inviteType: inviteTypeEnumSchema.nullish(),
-	
 	organizationId: z.string(),
 	invitedById: z.string().nullish(),
 	roleId: z.string().nullish(),
@@ -49,8 +48,8 @@ export const inviteWithRelationsSchema = inviteSchema.extend({
 	employee: z.lazy(() => employeeSchema).nullish(),
 	teams: z.array(z.lazy(() => teamSchema)).optional(),
 	projects: z.array(z.object({
-		id: z.string(),
-		name: z.string()
+	id: z.string(),
+	name: z.string()
 	})).optional() // Project type not yet defined
 });
 
@@ -70,10 +69,10 @@ export const getInvitesRequestSchema = z.object({
 	take: z.number().min(1).max(100).optional(),
 	skip: z.number().min(0).optional(),
 	where: z.object({
-		status: inviteStatusEnumSchema.optional(),
-		inviteType: inviteTypeEnumSchema.optional(),
-		invitedById: z.string().optional(),
-		email: z.string().optional()
+	status: inviteStatusEnumSchema.optional(),
+	inviteType: inviteTypeEnumSchema.optional(),
+	invitedById: z.string().optional(),
+	email: z.string().optional()
 	}).optional()
 });
 
@@ -91,8 +90,8 @@ export const createInviteRequestSchema = z.object({
 
 export const bulkCreateInvitesRequestSchema = z.object({
 	emails: z.array(z.object({
-		email: z.string().email(),
-		fullName: z.string().optional()
+	email: z.string().email(),
+	fullName: z.string().optional()
 	})),
 	organizationId: z.string().uuid(),
 	invitedById: z.string().uuid(),
@@ -154,9 +153,9 @@ export const bulkCreateInvitesResponseSchema = z.object({
 
 export const acceptInviteResponseSchema = z.object({
 	data: z.object({
-		user: z.lazy(() => userSchema),
-		employee: z.lazy(() => employeeSchema).optional(),
-		token: z.string().optional() // Auth token if new user
+	user: z.lazy(() => userSchema),
+	employee: z.lazy(() => employeeSchema).optional(),
+	token: z.string().optional() // Auth token if new user
 	}),
 	message: z.string().optional(),
 	success: z.boolean()
@@ -185,20 +184,14 @@ export type InviteTypeEnum = z.infer<typeof inviteTypeEnumSchema>;
 export type Invite = z.infer<typeof inviteSchema>;
 export type InviteTeam = z.infer<typeof inviteTeamSchema>;
 export type InviteProject = z.infer<typeof inviteProjectSchema>;
-export type InviteWithRelations = z.infer<typeof inviteWithRelationsSchema>;
-
-// Request types
-export type GetInviteRequest = z.infer<typeof getInviteRequestSchema>;
+export type InviteWithRelations = z.infer<typeof inviteWithRelationsSchema>;export type GetInviteRequest = z.infer<typeof getInviteRequestSchema>;
 export type GetInvitesRequest = z.infer<typeof getInvitesRequestSchema>;
 export type CreateInviteRequest = z.infer<typeof createInviteRequestSchema>;
 export type BulkCreateInvitesRequest = z.infer<typeof bulkCreateInvitesRequestSchema>;
 export type AcceptInviteRequest = z.infer<typeof acceptInviteRequestSchema>;
 export type ResendInviteRequest = z.infer<typeof resendInviteRequestSchema>;
 export type DeleteInviteRequest = z.infer<typeof deleteInviteRequestSchema>;
-export type ValidateInviteTokenRequest = z.infer<typeof validateInviteTokenRequestSchema>;
-
-// Response types
-export type InviteResponse = z.infer<typeof inviteResponseSchema>;
+export type ValidateInviteTokenRequest = z.infer<typeof validateInviteTokenRequestSchema>;export type InviteResponse = z.infer<typeof inviteResponseSchema>;
 export type InvitesListResponse = z.infer<typeof invitesListResponseSchema>;
 export type CreateInviteResponse = z.infer<typeof createInviteResponseSchema>;
 export type BulkCreateInvitesResponse = z.infer<typeof bulkCreateInvitesResponseSchema>;

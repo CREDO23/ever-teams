@@ -22,7 +22,6 @@ export const teamSchema = basePerTenantEntityModelSchema.extend({
 	emoji: z.string().nullish(),
 	taskPrivacy: z.boolean().nullish(),
 	description: z.string().nullish(),
-	
 	organizationId: z.string(),
 	creatorId: z.string().nullish(),
 	imageId: z.string().nullish()
@@ -32,7 +31,6 @@ export const teamMemberSchema = basePerTenantEntityModelSchema.extend({
 	teamId: z.string(),
 	employeeId: z.string(),
 	roleId: z.string().nullish(),
-	
 	isManager: z.boolean().nullish(),
 	assignedAt: z.union([z.date(), z.string()]).optional()
 });
@@ -61,9 +59,9 @@ export const getTeamsRequestSchema = z.object({
 	take: z.number().min(1).max(100).optional(),
 	skip: z.number().min(0).optional(),
 	where: z.object({
-		public: z.boolean().optional(),
-		name: z.string().optional(),
-		creatorId: z.string().optional()
+	public: z.boolean().optional(),
+	name: z.string().optional(),
+	creatorId: z.string().optional()
 	}).optional()
 });
 
@@ -155,20 +153,14 @@ export const teamMembersListResponseSchema = z.object({
 export type Team = z.infer<typeof teamSchema>;
 export type TeamMember = z.infer<typeof teamMemberSchema>;
 export type TeamWithRelations = z.infer<typeof teamWithRelationsSchema>;
-export type TeamMemberWithRelations = z.infer<typeof teamMemberWithRelationsSchema>;
-
-// Request types
-export type GetTeamRequest = z.infer<typeof getTeamRequestSchema>;
+export type TeamMemberWithRelations = z.infer<typeof teamMemberWithRelationsSchema>;export type GetTeamRequest = z.infer<typeof getTeamRequestSchema>;
 export type GetTeamsRequest = z.infer<typeof getTeamsRequestSchema>;
 export type CreateTeamRequest = z.infer<typeof createTeamRequestSchema>;
 export type UpdateTeamRequest = z.infer<typeof updateTeamRequestSchema>;
 export type DeleteTeamRequest = z.infer<typeof deleteTeamRequestSchema>;
 export type AddTeamMemberRequest = z.infer<typeof addTeamMemberRequestSchema>;
 export type RemoveTeamMemberRequest = z.infer<typeof removeTeamMemberRequestSchema>;
-export type UpdateTeamMemberRoleRequest = z.infer<typeof updateTeamMemberRoleRequestSchema>;
-
-// Response types
-export type TeamResponse = z.infer<typeof teamResponseSchema>;
+export type UpdateTeamMemberRoleRequest = z.infer<typeof updateTeamMemberRoleRequestSchema>;export type TeamResponse = z.infer<typeof teamResponseSchema>;
 export type TeamsListResponse = z.infer<typeof teamsListResponseSchema>;
 export type CreateTeamResponse = z.infer<typeof createTeamResponseSchema>;
 export type UpdateTeamResponse = z.infer<typeof updateTeamResponseSchema>;

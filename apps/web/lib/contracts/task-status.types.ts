@@ -5,69 +5,68 @@ import { teamSchema } from './team.types';
 
 // ============ Enums ============
 export const taskStatusNameEnum = z.enum([
-  'TODO',
-  'IN_PROGRESS',
-  'READY_FOR_REVIEW',
-  'IN_REVIEW',
-  'BLOCKED',
-  'COMPLETED',
-  'CUSTOM'
-]);
+	'TODO',
+	'IN_PROGRESS',
+	'READY_FOR_REVIEW',
+	'IN_REVIEW',
+	'BLOCKED',
+	'COMPLETED',
+	'CUSTOM'
+	]);
 
 // ============ Database Schema ============
 export const taskStatusSchema = basePerTenantEntityModelSchema.extend({
-  name: z.string(),
-  value: z.string(),
-  description: z.string().nullish(),
-  icon: z.string().nullish(),
-  color: z.string().nullish(),
-  order: z.number().nullish(),
-  isSystem: z.boolean().default(false).optional(),
-  isCollapsed: z.boolean().default(false).optional(),
-  isDefault: z.boolean().default(false).optional(),
-  template: taskStatusNameEnum.nullish(),
+	name: z.string(),
+	value: z.string(),
+	description: z.string().nullish(),
+	icon: z.string().nullish(),
+	color: z.string().nullish(),
+	order: z.number().nullish(),
+	isSystem: z.boolean().default(false).optional(),
+	isCollapsed: z.boolean().default(false).optional(),
+	isDefault: z.boolean().default(false).optional(),
+	template: taskStatusNameEnum.nullish(),
   // Workflow flags
-  isTodo: z.boolean().default(false).optional(),
-  isInProgress: z.boolean().default(false).optional(),
-  isDone: z.boolean().default(false).optional(),
-  // Foreign keys
-  organizationTeamId: z.string().nullish(),
-  projectId: z.string().nullish(),
+	isTodo: z.boolean().default(false).optional(),
+	isInProgress: z.boolean().default(false).optional(),
+	isDone: z.boolean().default(false).optional(),s
+	organizationTeamId: z.string().nullish(),
+	projectId: z.string().nullish(),
 });
 
 // ============ With Relations ============
 export const taskStatusWithRelationsSchema = taskStatusSchema.extend({
-  fullIconUrl: z.string().url().optional(),
-  organizationTeam: z.lazy(() =>
-    teamSchema
-  ).optional(),
-  project: z.lazy(() =>
-    projectSchema
-  ).optional(),
+	fullIconUrl: z.string().url().optional(),
+	organizationTeam: z.lazy(() =>
+	teamSchema
+	).optional(),
+	project: z.lazy(() =>
+	projectSchema
+	).optional(),
 });
 
 // ============ Request Schemas ============
 export const getTaskStatusRequestSchema = z.object({
-  id: z.string().optional(),
-  organizationId: z.string().optional(),
-  organizationTeamId: z.string().optional(),
-  projectId: z.string().optional(),
-  tenantId: z.string().optional(),
+	id: z.string().optional(),
+	organizationId: z.string().optional(),
+	organizationTeamId: z.string().optional(),
+	projectId: z.string().optional(),
+	tenantId: z.string().optional(),
 });
 
 export const getTaskStatusesRequestSchema = z.object({
-  organizationId: z.string().optional(),
-  organizationTeamId: z.string().optional(),
-  projectId: z.string().optional(),
-  tenantId: z.string().optional(),
-  page: z.number().positive().optional(),
-  limit: z.number().positive().optional(),
+	organizationId: z.string().optional(),
+	organizationTeamId: z.string().optional(),
+	projectId: z.string().optional(),
+	tenantId: z.string().optional(),
+	page: z.number().positive().optional(),
+	limit: z.number().positive().optional(),
 });
 
 export const createTaskStatusRequestSchema = taskStatusSchema
-  .omit({ 
-    id: true, 
-    createdAt: true, 
+  .omit({
+    id: true,
+    createdAt: true,
     updatedAt: true,
     deletedAt: true,
     isActive: true,
@@ -75,30 +74,30 @@ export const createTaskStatusRequestSchema = taskStatusSchema
     isSystem: true,
   })
   .extend({
-    name: z.string().min(1),
-    value: z.string().min(1),
+	name: z.string().min(1),
+	value: z.string().min(1),
   });
 
 export const updateTaskStatusRequestSchema = createTaskStatusRequestSchema.partial();
 
 export const reorderTaskStatusRequestSchema = z.object({
   reorder: z.array(z.object({
-    id: z.string(),
-    order: z.number(),
+	id: z.string(),
+	order: z.number(),
   })),
 });
 
 // ============ Response Schemas ============
 export const taskStatusResponseSchema = z.object({
-  data: taskStatusWithRelationsSchema,
-  success: z.boolean(),
-  message: z.string().optional(),
+	data: taskStatusWithRelationsSchema,
+	success: z.boolean(),
+	message: z.string().optional(),
 });
 
 export const taskStatusListResponseSchema = z.object({
-  data: z.array(taskStatusWithRelationsSchema),
-  total: z.number(),
-  success: z.boolean(),
+	data: z.array(taskStatusWithRelationsSchema),
+	total: z.number(),
+	success: z.boolean(),
 });
 
 // ============ Type Exports ============
