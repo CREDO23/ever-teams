@@ -7,9 +7,7 @@ import {
 	signInEmailConfirmResponseSchema,
 	type RegisterWithAppRequest,
 	type SignInEmailRequest,
-	type SignInEmailResponse,
-	type SignInPasscodeRequest,
-	type SignInEmailConfirmResponse
+	type SignInPasscodeRequest
 } from '../contracts/auth.types';
 import { userWithRelationsSchema } from '../contracts/user.types';
 
@@ -30,9 +28,9 @@ export class AuthService extends BaseAPIService {
 	 * Send magic link email for workspace signin
 	 * Backend returns { status: HttpStatus.OK, message: 'OK' }
 	 */
-	async signInWithEmail(data: SignInEmailRequest): Promise<SignInEmailResponse> {
+	async signInWithEmail(data: SignInEmailRequest) {
 		const validatedData = signInEmailRequestSchema.parse(data);
-		return this.post<SignInEmailResponse>('/auth/signin.email', {
+		return this.post('/auth/signin.email', {
 			body: validatedData,
 			responseSchema: signInEmailResponseSchema
 		});
@@ -42,9 +40,9 @@ export class AuthService extends BaseAPIService {
 	 * Confirm workspace signin with code
 	 * Backend returns IUserSigninWorkspaceResponse
 	 */
-	async signInWithPasscode(data: SignInPasscodeRequest): Promise<SignInEmailConfirmResponse> {
+	async signInWithPasscode(data: SignInPasscodeRequest) {
 		const validatedData = signInPasscodeRequestSchema.parse(data);
-		return this.post<SignInEmailConfirmResponse>('/auth/signin.email/confirm', {
+		return this.post('/auth/signin.email/confirm', {
 			body: validatedData,
 			responseSchema: signInEmailConfirmResponseSchema
 		});
