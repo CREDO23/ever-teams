@@ -32,3 +32,4 @@ export * from './activity.types';
 export * from './team-employee.types';
 export * from './integration.types';
 export * from './request-to-join.types';
+export * from './auth.types';
