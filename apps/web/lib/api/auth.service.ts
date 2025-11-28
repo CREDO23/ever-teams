@@ -1,26 +1,24 @@
 import { BaseAPIService } from './base-api.service';
 import {
-	authResponseSchema,
 	registerWithAppRequestSchema,
 	signInEmailRequestSchema,
 	signInEmailResponseSchema,
 	signInPasscodeRequestSchema,
 	signInEmailConfirmResponseSchema,
-	type AuthResponse,
 	type RegisterWithAppRequest,
 	type SignInEmailRequest,
 	type SignInEmailResponse,
 	type SignInPasscodeRequest,
 	type SignInEmailConfirmResponse
 } from '../contracts/auth.types';
-import { userWithRelationsSchema, type UserWithRelations } from '../contracts/user.types';
+import { userWithRelationsSchema } from '../contracts/user.types';
 
 export class AuthService extends BaseAPIService {
 	/**
 	 * Register a new user
 	 * Backend returns IUser object
 	 */
-	async register(data: RegisterWithAppRequest): Promise<UserWithRelations> {
+	async register(data: RegisterWithAppRequest) {
 		const validatedData = registerWithAppRequestSchema.parse(data);
 		return this.post('/auth/register', {
 			body: validatedData,
@@ -34,7 +32,7 @@ export class AuthService extends BaseAPIService {
 	 */
 	async signInWithEmail(data: SignInEmailRequest): Promise<SignInEmailResponse> {
 		const validatedData = signInEmailRequestSchema.parse(data);
-		return this.post('/auth/signin.email', {
+		return this.post<SignInEmailResponse>('/auth/signin.email', {
 			body: validatedData,
 			responseSchema: signInEmailResponseSchema
 		});
@@ -46,7 +44,7 @@ export class AuthService extends BaseAPIService {
 	 */
 	async signInWithPasscode(data: SignInPasscodeRequest): Promise<SignInEmailConfirmResponse> {
 		const validatedData = signInPasscodeRequestSchema.parse(data);
-		return this.post('/auth/signin.email/confirm', {
+		return this.post<SignInEmailConfirmResponse>('/auth/signin.email/confirm', {
 			body: validatedData,
 			responseSchema: signInEmailConfirmResponseSchema
 		});
