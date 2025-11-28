@@ -1,0 +1,97 @@
+import { z } from 'zod';
+import { basePerTenantAndOrganizationEntityModelSchema } from './common.types';
+
+// ============ Enums ============
+export const issueTypeEnum = z.enum([
+  'BUG',
+  'TASK', 
+  'STORY',
+  'EPIC',
+  'CUSTOM'
+]);
+
+// ============ Database Schema ============
+export const issueTypeSchema = basePerTenantAndOrganizationEntityModelSchema.extend({
+  name: z.string(),
+  value: z.string(),
+  description: z.string().nullable().optional(),
+  icon: z.string().nullable().optional(),
+  color: z.string().nullable().optional(),
+  isDefault: z.boolean().default(false).optional(),
+  isSystem: z.boolean().default(false).optional(),
+  // Foreign keys
+  organizationTeamId: z.string().nullable().optional(),
+  projectId: z.string().nullable().optional(),
+  imageId: z.string().nullable().optional(),
+});
+
+// ============ With Relations ============
+export const issueTypeWithRelationsSchema = issueTypeSchema.extend({
+  fullIconUrl: z.string().url().optional(),
+  organizationTeam: z.lazy(() =>
+    require('./team.types').teamSchema
+  ).optional(),
+  project: z.lazy(() =>
+    require('./project.types').projectSchema
+  ).optional(),
+  image: z.lazy(() =>
+    require('./image-asset.types').imageAssetSchema
+  ).optional(),
+});
+
+// ============ Request Schemas ============
+export const getIssueTypeRequestSchema = z.object({
+  id: z.string().optional(),
+  organizationId: z.string().optional(),
+  organizationTeamId: z.string().optional(),
+  projectId: z.string().optional(),
+  tenantId: z.string().optional(),
+});
+
+export const getIssueTypesRequestSchema = z.object({
+  organizationId: z.string().optional(),
+  organizationTeamId: z.string().optional(),
+  projectId: z.string().optional(),
+  tenantId: z.string().optional(),
+  page: z.number().positive().optional(),
+  limit: z.number().positive().optional(),
+});
+
+export const createIssueTypeRequestSchema = z.object({
+  name: z.string().min(1),
+  value: z.string().optional(),
+  description: z.string().optional(),
+  icon: z.string().optional(),
+  color: z.string().optional(),
+  isDefault: z.boolean().optional(),
+  projectId: z.string().optional(),
+  organizationId: z.string().nullable().optional(),
+  tenantId: z.string().nullable().optional(),
+  organizationTeamId: z.string().nullable().optional(),
+});
+
+export const updateIssueTypeRequestSchema = createIssueTypeRequestSchema.partial();
+
+// ============ Response Schemas ============
+export const issueTypeResponseSchema = z.object({
+  data: issueTypeWithRelationsSchema,
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
+export const issueTypeListResponseSchema = z.object({
+  data: z.array(issueTypeWithRelationsSchema),
+  total: z.number(),
+  success: z.boolean(),
+});
+
+// ============ Type Exports ============
+export type IssueTypeName = z.infer<typeof issueTypeEnum>;
+export type IssueType = z.infer<typeof issueTypeSchema>;
+export type IssueTypeWithRelations = z.infer<typeof issueTypeWithRelationsSchema>;
+export type GetIssueTypeRequest = z.infer<typeof getIssueTypeRequestSchema>;
+export type GetIssueTypesRequest = z.infer<typeof getIssueTypesRequestSchema>;
+export type CreateIssueTypeRequest = z.infer<typeof createIssueTypeRequestSchema>;
+export type UpdateIssueTypeRequest = z.infer<typeof updateIssueTypeRequestSchema>;
+export type IssueTypeResponse = z.infer<typeof issueTypeResponseSchema>;
+export type IssueTypeListResponse = z.infer<typeof issueTypeListResponseSchema>;
